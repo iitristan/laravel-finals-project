@@ -1,14 +1,20 @@
 import React from 'react';
-import { Head } from '@inertiajs/inertia-react';
-import WelcomeNavbar from '@/Components/WelcomeNavbar';
+import { Head } from '@inertiajs/react';
+import WelcomeNavbar from '../Components/WelcomeNavbar';
 
 export default function Welcome() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+        <>
             <Head title="Welcome" />
             <WelcomeNavbar />
-            <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
+            <div className="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0">
+                <div className="max-w-6xl mx-auto sm:px-6 lg:px-8">
+                    <div className="flex justify-center pt-8 sm:justify-start sm:pt-0">
+                        <h1 className="text-4xl font-bold">Welcome</h1>
+                            
+                    </div>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
