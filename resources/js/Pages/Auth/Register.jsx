@@ -15,7 +15,7 @@ export default function Register() {
 
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-            <div className="bg-white p-8 rounded-lg shadow-md w-96">
+            <div className="bg-white rounded-lg shadow-md md:w-96 w-full p-8">
                 <h1 className="text-2xl font-bold text-gray-800 mb-6">Register</h1>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">

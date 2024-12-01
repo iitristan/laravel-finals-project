@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from '@inertiajs/inertia-react';
 import { Head } from '@inertiajs/inertia-react';
+import WelcomeNavbar from '@/Components/WelcomeNavbar';
 
 export default function Welcome() {
     return (
@@ -17,7 +17,7 @@ export default function Welcome() {
                             Your journey begins here. Sign in to explore more!
                         </p>
                     </div>
-                    
+
                     <div className="space-y-4">
                         <Link
                             href="/login"
