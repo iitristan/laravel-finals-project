@@ -16,3 +16,7 @@
 .bg-gradient {
     background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
 }
+
+.bg-gradient-to-br {
+    background: linear-gradient(135deg, var(--tw-gradient-from) 0%, var(--tw-gradient-via) 50%, var(--tw-gradient-to) 100%);
+}
