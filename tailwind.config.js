@@ -4,6 +4,7 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 export default {
     content: [
         "./resources/**/*.jsx",
+        "./resources/**/*tsx",
     ],
     theme: {
         extend: {

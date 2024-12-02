@@ -1,12 +1,19 @@
-import { useForm } from '@inertiajs/inertia-react';
+import React from 'react';
+import { useForm } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 
-export default function Login() {
-    const { data, setData, post, processing, errors } = useForm({
+interface LoginForm {
+    email: string;
+    password: string;
+}
+
+const Login: React.FC = () => {
+    const { data, setData, post, processing, errors } = useForm<LoginForm>({
         email: '',
         password: '',
     });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post('/login');
     };
@@ -51,11 +58,13 @@ export default function Login() {
                     </button>
                 </form>
                 <div className="mt-4 text-center">
-                    <a href="/register" className="text-blue-500 hover:text-blue-600">
+                    <Link href={route('register')} className="text-blue-500 hover:text-blue-600">
                         Don't have an account? Register
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>
     );
 }
+
+export default Login;

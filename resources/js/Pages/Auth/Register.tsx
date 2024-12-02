@@ -1,14 +1,22 @@
-import { useForm } from '@inertiajs/inertia-react';
+import React from 'react';
+import { useForm } from '@inertiajs/react';
 
-export default function Register() {
-    const { data, setData, post, processing, errors } = useForm({
+interface RegisterForm {
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+}
+
+const Register: React.FC = () => {
+    const { data, setData, post, processing, errors } = useForm<RegisterForm>({
         name: '',
         email: '',
         password: '',
         password_confirmation: '',
     });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post('/register');
     };
@@ -86,3 +94,5 @@ export default function Register() {
         </div>
     );
 }
+
+export default Register;

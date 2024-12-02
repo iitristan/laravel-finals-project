@@ -43,6 +43,12 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'message' => fn () => $request->session()->get('message')
             ],
+            'ziggy' => [
+                'url' => config('app.url'),
+                'routes' => function () {
+                    return app('router')->getRoutes()->getRoutesByName();
+                },
+            ],
         ]);
     }
 }

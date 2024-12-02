@@ -1,8 +1,8 @@
-import { useForm } from '@inertiajs/inertia-react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import React from 'react'
 
 export default function Dashboard() {
-    const { post } = useForm();
+    const { post } = usePage();
 
     const handleLogout = () => {
         post('/logout');

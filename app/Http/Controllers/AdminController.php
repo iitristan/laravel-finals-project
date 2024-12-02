@@ -48,4 +48,9 @@ class AdminController extends Controller
         }
         return Inertia::render('Admin/Dashboard');
     }
+
+    public function loginForm()
+    {
+        return Inertia::render('Admin/Login');
+    }
 }

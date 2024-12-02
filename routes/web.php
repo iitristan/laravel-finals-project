@@ -21,7 +21,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes
 Route::prefix('admin')->group(function () {
-    Route::get('login', [AdminController::class, 'loginForm'])->name('admin.login');
+    Route::get('/login', [AdminController::class, 'loginForm'])->name('admin.login');
     Route::post('login', [AdminController::class, 'login']);
     
     Route::middleware(['auth:admin'])->group(function () {
