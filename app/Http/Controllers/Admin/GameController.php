@@ -10,7 +10,7 @@ class GameController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Admin/Games/Index');
+        return Inertia::render('Admin/ManageGames');
     }
 
     public function create()

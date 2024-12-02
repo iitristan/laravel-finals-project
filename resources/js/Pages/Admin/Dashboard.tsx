@@ -1,6 +1,7 @@
 import React from 'react';
 import { Head } from '@inertiajs/react';
-import AdminNavbar from '@/Components/AdminNavbar';
+import AdminNavbar from '@/Navbars/AdminNavbar';
+
 
 interface DashboardStats {
     totalGames?: number;
@@ -10,7 +11,7 @@ interface DashboardStats {
 }
 
 const Dashboard: React.FC<DashboardStats> = ({
-    totalGames = 0,
+    totalGames = 1,
     totalOrders = 0,
     totalUsers = 0,
     totalRevenue = 0
