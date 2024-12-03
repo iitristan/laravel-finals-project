@@ -4,7 +4,7 @@ import { Game } from '@/types/game'
 import { GameInput } from '@/types/gameInput'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, X, Plus, Loader2 } from 'lucide-react'
+import { Search, X, Plus, Loader2, ImageOff } from 'lucide-react'
 
 interface Props {
   isOpen: boolean
@@ -94,27 +94,48 @@ export default function AddGameModal({
                       className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
                     >
                       <div className="flex items-center space-x-4 flex-1">
-                        <span className="font-medium text-gray-900 dark:text-white">{game.name}</span>
-                        <div className="flex space-x-2">
-                          <input
-                            type="number"
-                            placeholder="Price"
-                            value={gameInputs[game.id]?.price || ''}
-                            onChange={(e) => onInputChange(game.id, 'price', e.target.value)}
-                            className="border rounded px-3 py-2 w-24 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                          />
-                          <input
-                            type="number"
-                            placeholder="Quantity"
-                            value={gameInputs[game.id]?.quantity || ''}
-                            onChange={(e) => onInputChange(game.id, 'quantity', e.target.value)}
-                            className="border rounded px-3 py-2 w-24 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                          />
+                        <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-600">
+                          {game.background_image ? (
+                            <img
+                              src={game.background_image}
+                              alt={game.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = 'fallback-image-url.jpg'; // Add a fallback image URL
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <ImageOff className="w-6 h-6 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex-1">
+                          <span className="font-medium text-gray-900 dark:text-white">{game.name}</span>
+                          <div className="flex space-x-2 mt-2">
+                            <input
+                              type="number"
+                              placeholder="Price"
+                              value={gameInputs[game.id]?.price || ''}
+                              onChange={(e) => onInputChange(game.id, 'price', e.target.value)}
+                              className="border rounded px-3 py-2 w-24 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
+                            />
+                            <input
+                              type="number"
+                              placeholder="Quantity"
+                              value={gameInputs[game.id]?.quantity || ''}
+                              onChange={(e) => onInputChange(game.id, 'quantity', e.target.value)}
+                              className="border rounded px-3 py-2 w-32 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
+                            />
+                          </div>
                         </div>
                       </div>
+
                       <button
                         onClick={() => onAddGame(game)}
-                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2 ml-4"
                       >
                         <Plus className="w-5 h-5" />
                         <span>Add</span>
