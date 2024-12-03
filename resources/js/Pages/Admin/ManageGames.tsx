@@ -217,67 +217,103 @@ export default function GamesIndex({ games: initialGames }: Props) {
 
             {/* Add Game Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium">Add New Game</h3>
+                <div className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                    <div className="relative top-10 mx-auto p-8 border w-[800px] shadow-2xl rounded-xl bg-white">
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-2xl font-bold text-gray-800">Add New Game</h3>
                             <button 
                                 onClick={() => setIsModalOpen(false)}
-                                className="text-gray-500 hover:text-gray-700"
+                                className="text-gray-400 hover:text-gray-600 transition duration-150"
                             >
-                                ×
+                                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                             </button>
                         </div>
-                        
-                        <input
-                            type="text"
-                            placeholder="Search games..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full p-2 border rounded mb-4"
-                        />
 
+                        {/* Search Section */}
+                        <div className="mb-6">
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder="Search for games..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150"
+                                />
+                                <div className="absolute left-4 top-3.5 text-gray-400">
+                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Games List */}
                         {loading ? (
-                            <div className="text-center py-4">Loading...</div>
+                            <div className="flex justify-center items-center py-8">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                            </div>
                         ) : (
-                            <div className="max-h-60 overflow-y-auto mb-4">
-                                {searchResults.map((game) => (
-                                    <div key={game.id} className="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
-                                        <img 
-                                            src={game.background_image} 
-                                            alt={game.name}
-                                            className="h-12 w-12 rounded object-cover mr-3"
-                                        />
-                                        <div>
-                                            <div className="font-medium">{game.name}</div>
-                                            <div className="text-sm text-gray-500">
-                                                Rating: {game.rating}
-                                            </div>
-                                            <div className="mt-2">
-                                                <input
-                                                    type="number"
-                                                    placeholder="Price"
-                                                    value={gameInputs[game.id]?.price || ''}
-                                                    onChange={(e) => handleInputChange(game.id, 'price', e.target.value)}
-                                                    className="w-24 p-1 border rounded mr-2"
-                                                />
-                                                <input
-                                                    type="number"
-                                                    placeholder="Quantity"
-                                                    value={gameInputs[game.id]?.quantity || ''}
-                                                    onChange={(e) => handleInputChange(game.id, 'quantity', e.target.value)}
-                                                    className="w-24 p-1 border rounded mr-2"
-                                                />
-                                                <button
-                                                    onClick={() => handleAddGame(game)}
-                                                    className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
-                                                >
-                                                    Add
-                                                </button>
+                            <div className="max-h-[600px] overflow-y-auto pr-2">
+                                <div className="grid grid-cols-1 gap-4">
+                                    {searchResults.map((game) => (
+                                        <div 
+                                            key={game.id} 
+                                            className="flex bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition duration-150"
+                                        >
+                                            <img 
+                                                src={game.background_image} 
+                                                alt={game.name}
+                                                className="h-32 w-48 object-cover rounded-lg"
+                                            />
+                                            <div className="ml-4 flex-grow">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h4 className="text-lg font-semibold text-gray-800">{game.name}</h4>
+                                                        <div className="mt-1 text-sm text-gray-600">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <svg className="h-4 w-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                                </svg>
+                                                                <span>{game.rating.toFixed(1)}</span>
+                                                            </div>
+                                                            <p className="text-sm text-gray-500">
+                                                                {game.genres?.map(g => g.name).join(', ')}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <input
+                                                            type="number"
+                                                            placeholder="Price"
+                                                            value={gameInputs[game.id]?.price || ''}
+                                                            onChange={(e) => handleInputChange(game.id, 'price', e.target.value)}
+                                                            className="w-24 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        />
+                                                        <input
+                                                            type="number"
+                                                            placeholder="Quantity"
+                                                            value={gameInputs[game.id]?.quantity || ''}
+                                                            onChange={(e) => handleInputChange(game.id, 'quantity', e.target.value)}
+                                                            className="w-24 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        />
+                                                        <button
+                                                            onClick={() => handleAddGame(game)}
+                                                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-150 flex items-center gap-2"
+                                                        >
+                                                            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                            </svg>
+                                                            Add
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>
