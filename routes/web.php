@@ -51,6 +51,22 @@ Route::prefix('admin')->group(function () {
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
+        return Inertia::render('User/Dashboard');
     })->name('dashboard');
+
+    Route::get('/store', function () {
+        return Inertia::render('User/GameStore');
+    })->name('store');
+
+    Route::get('/orders', function () {
+        return Inertia::render('User/Orders');
+    })->name('orders');
+
+    Route::get('/wishlist', function () {
+        return Inertia::render('User/Wishlist');
+    })->name('wishlist');
+
+    Route::get('/cart', function () {
+        return Inertia::render('User/Cart');
+    })->name('cart');
 });

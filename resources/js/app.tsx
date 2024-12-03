@@ -10,24 +10,18 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: async (name) => {
         const pages = import.meta.glob('./Pages/**/*.tsx', { eager: true });
-        const auth = import.meta.glob('./Auth/*.tsx', { eager: true });
         
         // Debug logging
         console.log('Looking for:', name);
         console.log('Available pages:', Object.keys(pages));
-        console.log('Available auth:', Object.keys(auth));
         
-        let component;
+        const component = pages[`./Pages/${name}.tsx`];
         
-        if (name.startsWith('Auth/')) {
-            // Remove 'Auth/' prefix for auth components
-            const authName = name.replace('Auth/', '');
-            component = auth[`./Auth/${authName}.tsx`];
-        } else {
-            component = pages[`./Pages/${name}.tsx`];
+        if (!component) {
+            throw new Error(`Component ${name} not found`);
         }
         
-        if (!component || typeof component !== 'object' || !('default' in component)) {
+        if (!component.default) {
             throw new Error(`Component ${name} has no default export`);
         }
         
@@ -41,4 +35,3 @@ createInertiaApp({
         color: '#4B5563',
     },
 });
-

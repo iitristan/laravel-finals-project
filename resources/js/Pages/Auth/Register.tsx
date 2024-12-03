@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from '@inertiajs/react';
+import { useForm, Head } from '@inertiajs/react';
 
 interface RegisterForm {
     name: string;
@@ -8,7 +8,7 @@ interface RegisterForm {
     password_confirmation: string;
 }
 
-const Register: React.FC = () => {
+export default function Register() {
     const { data, setData, post, processing, errors } = useForm<RegisterForm>({
         name: '',
         email: '',
@@ -90,19 +90,10 @@ const Register: React.FC = () => {
                         className="w-full mt-6 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         disabled={processing}
                     >
-                        {processing ? 'Registering...' : 'Register'}
+                        {processing ? 'Creating Account...' : 'Create Account'}
                     </button>
                 </form>
-                <p className="mt-4 text-center text-sm text-gray-600">
-                    Already have an account?{' '}
-                    <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-                        Login
-                    </a>
-                </p>
             </div>
         </div>
     );
 }
-
-export default Register;
-

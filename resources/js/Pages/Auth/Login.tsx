@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useForm, Link } from '@inertiajs/react';
+import { useForm, Link, Head } from '@inertiajs/react';
 
 interface LoginForm {
     email: string;
     password: string;
 }
 
-const Login: React.FC = () => {
+export default function Login() {
     const { data, setData, post, processing, errors } = useForm<LoginForm>({
         email: '',
         password: '',
@@ -21,6 +21,7 @@ const Login: React.FC = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-indigo-100 to-purple-100">
+            <Head title="Login" />
             <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md transform transition-all hover:scale-105">
                 <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Welcome Back</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -99,7 +100,3 @@ const Login: React.FC = () => {
         </div>
     );
 }
-
-export default Login;
-
-
