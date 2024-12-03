@@ -12,11 +12,15 @@ class Game extends Model
         'background_image',
         'price',
         'quantity',
-        'status'
+        'status',
+        'rating',
+        'genres'
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'quantity' => 'integer',
+        'rating' => 'float',
+        'genres' => 'array'
     ];
 }

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->decimal('price', 8, 2);
             $table->integer('quantity');
             $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->float('rating')->nullable();
+            $table->json('genres')->nullable();
             $table->timestamps();
         });
     }

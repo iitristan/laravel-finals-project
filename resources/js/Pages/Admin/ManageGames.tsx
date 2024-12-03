@@ -13,6 +13,11 @@ interface Game {
     rating: number;
     released: string;
     metacritic: number;
+    genres: {
+        id: number;
+        name: string;
+        slug: string;
+    }[];
 }
 
 interface ManagedGame extends Game {
@@ -88,6 +93,8 @@ export default function GamesIndex({ games: initialGames }: Props) {
                 price,
                 quantity,
                 status: 'active',
+                rating: game.rating,
+                genres: game.genres,
             });
 
             if (response.status === 201) {
@@ -141,6 +148,12 @@ export default function GamesIndex({ games: initialGames }: Props) {
                                                 Quantity
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Rating
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Genres
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Status
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -168,6 +181,16 @@ export default function GamesIndex({ games: initialGames }: Props) {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-900">{game.quantity}</div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-900">
+                                                        {game.rating ? game.rating.toFixed(1) : 'N/A'}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-900">
+                                                        {game.genres ? game.genres.map(g => g.name).join(', ') : 'N/A'}
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">

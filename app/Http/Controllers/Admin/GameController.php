@@ -25,6 +25,8 @@ class GameController extends Controller
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:0',
             'status' => 'required|string|in:active,inactive',
+            'rating' => 'nullable|numeric',
+            'genres' => 'nullable|array',
         ]);
 
         try {
