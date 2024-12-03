@@ -20,3 +20,37 @@
 .bg-gradient-to-br {
     background: linear-gradient(135deg, var(--tw-gradient-from) 0%, var(--tw-gradient-via) 50%, var(--tw-gradient-to) 100%);
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #2d3748;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #4a5568;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #718096;
+    }
+  }
+
+  
