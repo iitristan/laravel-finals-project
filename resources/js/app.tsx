@@ -27,11 +27,7 @@ createInertiaApp({
             component = pages[`./Pages/${name}.tsx`];
         }
         
-        if (!component) {
-            throw new Error(`Component not found: ${name}`);
-        }
-        
-        if (!component.default) {
+        if (!component || typeof component !== 'object' || !('default' in component)) {
             throw new Error(`Component ${name} has no default export`);
         }
         
