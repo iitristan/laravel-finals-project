@@ -1,8 +1,10 @@
 import { Head } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import AdminNavbar from '@/Navbars/AdminNavbar';
 import GameTable from '@/Components/Manage Games/GameTable';
 import AddGameModal from '@/Components/Manage Games/AddGameModal';
+import SearchAndFilter from '@/Components/Manage Games/SearchAndFilter';
+import ResultsSummary from '@/Components/Manage Games/ResultsSummary';
 import { rawgApi } from '@/services/rawgApi';
 import axios from 'axios';
 import route from 'ziggy-js';
@@ -13,13 +15,23 @@ interface Props {
     games: ManagedGame[];
 }
 
-export default function GamesIndex({ games: initialGames }: Props) {
+export default function ManageGames({ games: initialGames }: Props) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<Game[]>([]);
     const [loading, setLoading] = useState(false);
     const [managedGames, setManagedGames] = useState<ManagedGame[]>(initialGames);
     const [gameInputs, setGameInputs] = useState<Record<number, GameInput>>({});
+    const [tableSearchQuery, setTableSearchQuery] = useState('');
+    const [selectedGenre, setSelectedGenre] = useState<string>('');
+
+    const filteredGames = useMemo(() => {
+        return managedGames.filter(game => {
+            const matchesSearch = game.name.toLowerCase().includes(tableSearchQuery.toLowerCase());
+            const matchesGenre = selectedGenre === '' || game.genres?.some(genre => genre.name === selectedGenre);
+            return matchesSearch && matchesGenre;
+        });
+    }, [managedGames, tableSearchQuery, selectedGenre]);
 
     useEffect(() => {
         const searchGames = async () => {
@@ -124,8 +136,24 @@ export default function GamesIndex({ games: initialGames }: Props) {
                                     Add Game
                                 </button>
                             </div>
+
+                            <SearchAndFilter
+                                tableSearchQuery={tableSearchQuery}
+                                setTableSearchQuery={setTableSearchQuery}
+                                selectedGenre={selectedGenre}
+                                setSelectedGenre={setSelectedGenre}
+                                managedGames={managedGames}
+                            />
+
+                            <ResultsSummary
+                                filteredGamesCount={filteredGames.length}
+                                totalGamesCount={managedGames.length}
+                                selectedGenre={selectedGenre}
+                                tableSearchQuery={tableSearchQuery}
+                            />
+
                             <GameTable 
-                                games={managedGames} 
+                                games={filteredGames} 
                                 onGameUpdate={handleGameUpdate}
                                 onGameDelete={handleGameDelete}
                             />
