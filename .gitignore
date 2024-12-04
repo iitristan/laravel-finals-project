@@ -128,3 +128,14 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+.env.example
+composer.json
+composer.lock
+public/hot
+vendor/composer/autoload_classmap.php
+vendor/composer/autoload_static.php
+vendor/composer/installed.php
+vendor/laravel/framework/src/Illuminate/Foundation/resources/exceptions/renderer/dark-mode.css
+vendor/laravel/framework/src/Illuminate/Foundation/resources/exceptions/renderer/light-mode.css
+vendor/laravel/framework/src/Illuminate/Foundation/resources/exceptions/renderer/scripts.js
+vendor/laravel/framework/src/Illuminate/Foundation/resources/exceptions/renderer/styles.css
