@@ -26,6 +26,10 @@ export default function GameTableRow({ game, onUpdate, onDelete }: Props) {
         }
     };
 
+    const calculateTotalStockValue = (price: number, quantity: number) => {
+        return (price * quantity).toFixed(2);
+    };
+
     return (
         <tr>
             <td className="px-6 py-4 whitespace-nowrap">
@@ -45,6 +49,11 @@ export default function GameTableRow({ game, onUpdate, onDelete }: Props) {
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">{game.quantity}</div>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+                <div className="text-sm text-gray-900">
+                    ${calculateTotalStockValue(game.price, game.quantity)}
+                </div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">

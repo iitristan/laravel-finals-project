@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\GameController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\User\StoreController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -54,9 +55,9 @@ Route::middleware(['auth'])->group(function () {
         return Inertia::render('User/Dashboard');
     })->name('dashboard');
 
-    Route::get('/store', function () {
-        return Inertia::render('User/GameStore');
-    })->name('store');
+    // Store Routes
+    Route::get('/store', [StoreController::class, 'index'])->name('store');
+    Route::post('/cart/add/{game}', [StoreController::class, 'addToCart'])->name('cart.add');
 
     Route::get('/orders', function () {
         return Inertia::render('User/Orders');

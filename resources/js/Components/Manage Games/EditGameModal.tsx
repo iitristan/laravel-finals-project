@@ -106,30 +106,42 @@ export default function EditGameModal({ isOpen, onClose, game, onUpdate }: Props
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Price
+                <div className="mt-4">
+                  <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+                    Price per Game
                   </label>
                   <input
                     type="number"
+                    step="0.01"
                     name="price"
+                    id="price"
                     value={formData.price}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Quantity
+                <div className="mt-4">
+                  <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
+                    Stock Available
                   </label>
                   <input
                     type="number"
                     name="quantity"
+                    id="quantity"
                     value={formData.quantity}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   />
+                </div>
+
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Total Stock Value
+                  </label>
+                  <div className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 px-3 py-2 text-gray-700 sm:text-sm">
+                    ${(parseFloat(formData.price) * parseInt(formData.quantity)).toFixed(2)}
+                  </div>
                 </div>
 
                 <div>

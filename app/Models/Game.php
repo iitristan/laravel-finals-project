@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\Genre;
 
 class Game extends Model
 {
@@ -14,13 +16,16 @@ class Game extends Model
         'quantity',
         'status',
         'rating',
-        'genres'
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'quantity' => 'integer',
         'rating' => 'float',
-        'genres' => 'array'
     ];
+
+    public function genres(): BelongsToMany
+    {
+        return $this->belongsToMany(Genre::class);
+    }
 }

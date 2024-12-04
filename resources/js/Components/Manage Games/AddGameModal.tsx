@@ -102,7 +102,7 @@ export default function AddGameModal({
                               className="w-full h-full object-cover"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
-                                target.src = 'fallback-image-url.jpg'; // Add a fallback image URL
+                                target.src = 'fallback-image-url.jpg';
                               }}
                             />
                           ) : (
@@ -114,32 +114,64 @@ export default function AddGameModal({
 
                         <div className="flex-1">
                           <span className="font-medium text-gray-900 dark:text-white">{game.name}</span>
-                          <div className="flex space-x-2 mt-2">
-                            <input
-                              type="number"
-                              placeholder="Price"
-                              value={gameInputs[game.id]?.price || ''}
-                              onChange={(e) => onInputChange(game.id, 'price', e.target.value)}
-                              className="border rounded px-3 py-2 w-24 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                            />
-                            <input
-                              type="number"
-                              placeholder="Quantity"
-                              value={gameInputs[game.id]?.quantity || ''}
-                              onChange={(e) => onInputChange(game.id, 'quantity', e.target.value)}
-                              className="border rounded px-3 py-2 w-32 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                            />
+                          <div className="flex space-x-4 mt-2">
+                            <div>
+                              <label htmlFor={`price-${game.id}`} className="block text-sm font-medium text-gray-700">
+                                Price per Game
+                              </label>
+                              <input
+                                type="number"
+                                step="0.01"
+                                name="price"
+                                id={`price-${game.id}`}
+                                value={gameInputs[game.id]?.price || ''}
+                                onChange={(e) => onInputChange(game.id, 'price', e.target.value)}
+                                className="mt-1 block w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              />
+                            </div>
+
+                            <div>
+                              <label htmlFor={`quantity-${game.id}`} className="block text-sm font-medium text-gray-700">
+                                Stock Available
+                              </label>
+                              <input
+                                type="number"
+                                name="quantity"
+                                id={`quantity-${game.id}`}
+                                value={gameInputs[game.id]?.quantity || ''}
+                                onChange={(e) => onInputChange(game.id, 'quantity', e.target.value)}
+                                className="mt-1 block w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">
+                                Total Stock Value
+                              </label>
+                              <div className="mt-1 block w-28 rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-gray-700 sm:text-sm">
+                                ${(parseFloat(gameInputs[game.id]?.price || '0') * parseInt(gameInputs[game.id]?.quantity || '0')).toFixed(2)}
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <button
-                        onClick={() => onAddGame(game)}
-                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2 ml-4"
-                      >
-                        <Plus className="w-5 h-5" />
-                        <span>Add</span>
-                      </button>
+                        <button
+                          onClick={() => {
+                            if (gameInputs[game.id]?.price && gameInputs[game.id]?.quantity) {
+                              onAddGame(game);
+                            }
+                          }}
+                          disabled={!gameInputs[game.id]?.price || !gameInputs[game.id]?.quantity}
+                          className={`flex-shrink-0 inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white 
+                            ${gameInputs[game.id]?.price && gameInputs[game.id]?.quantity
+                              ? 'bg-green-500 hover:bg-green-600'
+                              : 'bg-gray-400 cursor-not-allowed'
+                            } transition-colors duration-200`}
+                        >
+                          <Plus className="w-5 h-5 mr-1" />
+                          Add Game
+                        </button>
+                      </div>
                     </motion.li>
                   ))}
                 </AnimatePresence>
@@ -151,4 +183,3 @@ export default function AddGameModal({
     </AnimatePresence>
   )
 }
-
