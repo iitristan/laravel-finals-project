@@ -57,7 +57,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Store Routes
     Route::get('/store', [StoreController::class, 'index'])->name('store');
+
+    // Cart Routes
     Route::post('/cart/add/{game}', [StoreController::class, 'addToCart'])->name('cart.add');
+    Route::get('/cart', [StoreController::class, 'viewCart'])->name('cart');
+    Route::delete('/cart/remove/{game}', [StoreController::class, 'removeFromCart'])->name('cart.remove');
+    Route::post('/cart/update/{game}', [StoreController::class, 'updateCartQuantity'])->name('cart.update');
 
     Route::get('/orders', function () {
         return Inertia::render('User/Orders');
@@ -66,8 +71,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/wishlist', function () {
         return Inertia::render('User/Wishlist');
     })->name('wishlist');
-
-    Route::get('/cart', function () {
-        return Inertia::render('User/Cart');
-    })->name('cart');
 });

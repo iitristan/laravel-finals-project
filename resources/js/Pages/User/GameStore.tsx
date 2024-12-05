@@ -10,8 +10,10 @@ interface Props {
 }
 
 const GameStore = ({ games }: Props) => {
-    const handleAddToCart = (gameId: number) => {
-        router.post(`/cart/add/${gameId}`, {}, {
+    const handleAddToCart = (gameId: number, quantity: number) => {
+        router.post(`/cart/add/${gameId}`, {
+            quantity
+        }, {
             preserveScroll: true,
         });
     };
