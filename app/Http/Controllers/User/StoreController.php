@@ -82,9 +82,25 @@ class StoreController extends Controller
         
         if ($cart) {
             $cart->items()->where('game_id', $game->id)->delete();
+            
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Item removed from cart'
+                ]);
+            }
+            
+            return back()->with('success', 'Item removed from cart');
         }
 
-        return back()->with('success', 'Item removed from cart');
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Item not found in cart'
+            ], 404);
+        }
+
+        return back()->with('error', 'Item not found in cart');
     }
 
     public function updateCartQuantity(Request $request, Game $game)
@@ -102,5 +118,17 @@ class StoreController extends Controller
         }
 
         return back()->with('success', 'Cart updated');
+    }
+
+    public function removeAllFromCart()
+    {
+        $cart = Cart::where('user_id', Auth::id())->first();
+        
+        if ($cart) {
+            $cart->items()->delete();
+            return back()->with('success', 'Cart cleared successfully');
+        }
+
+        return back()->with('error', 'Cart is already empty');
     }
 }

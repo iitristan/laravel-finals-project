@@ -37,7 +37,7 @@ const UserNavbar = () => {
                                 Wishlist
                             </Link>
                             <Link 
-                                href={route('cart')} 
+                                href={route('cart.index')} 
                                 className="py-4 px-2 text-gray-700 hover:text-blue-500 transition duration-300"
                             >
                                 Cart
