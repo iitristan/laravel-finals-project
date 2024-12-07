@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\User\StoreController;
 use App\Http\Controllers\User\WishlistController;
+use App\Http\Controllers\User\OrderController as UserOrderController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -39,7 +40,7 @@ Route::prefix('admin')->group(function () {
         Route::delete('games/{game}', [GameController::class, 'destroy'])->name('admin.games.destroy');
         
         // Orders Management
-        Route::get('orders', [OrderController::class, 'index'])->name('admin.orders');
+        Route::get('orders', [Admin\OrderController::class, 'index'])->name('admin.orders');
         Route::get('orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
         Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.update-status');
         
@@ -69,9 +70,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/cart/remove-all', [StoreController::class, 'removeAllFromCart'])->name('cart.removeAll');
     });
 
-    Route::get('/orders', function () {
-        return Inertia::render('User/Orders');
-    })->name('orders');
+    Route::post('/checkout', [UserOrderController::class, 'store'])->name('checkout');
+    Route::get('/orders', [UserOrderController::class, 'index'])->name('orders');
 
     // Wishlist Routes
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');

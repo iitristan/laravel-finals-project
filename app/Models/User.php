@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Cart; // Add this line to import the Cart model
 use App\Models\Wishlist; // Add this line to import the Wishlist model
+use App\Models\Order; // Add this line to import the Order model
 
 class User extends Authenticatable
 {
@@ -56,5 +57,10 @@ class User extends Authenticatable
     public function wishlist()
     {
         return $this->hasOne(Wishlist::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

@@ -122,8 +122,30 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                                             Continue Shopping
                                         </Link>
                                         <button
-                                            onClick={() => router.post('/checkout')}
+                                            onClick={() => {
+                                                console.log('Starting checkout with items:', items);
+                                                router.post(route('checkout'), {
+                                                    cartItems: JSON.stringify(items)
+                                                }, {
+                                                    onSuccess: () => {
+                                                        console.log('Checkout successful');
+                                                        // Clear cart in backend
+                                                        router.post('/cart/remove-all', {}, {
+                                                            onSuccess: () => {
+                                                                setItems([]);
+                                                                setCartTotal(0);
+                                                                router.visit(route('orders'));
+                                                            }
+                                                        });
+                                                    },
+                                                    onError: (errors) => {
+                                                        console.error('Checkout failed:', errors);
+                                                        alert('Checkout failed. Please try again.');
+                                                    }
+                                                });
+                                            }}
                                             className="bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 transition-colors"
+                                            disabled={items.length === 0}
                                         >
                                             Proceed to Checkout
                                         </button>
