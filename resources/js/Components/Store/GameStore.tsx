@@ -2,7 +2,7 @@ import { ManagedGame } from '@/types/game';
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ShoppingCart, Star } from 'lucide-react';
 import AddToCartModal from './AddToCartModal';
-import AddToWishlistButton from '@/Components/Wishlist/AddToWishlistButton';
+import { Link, router } from '@inertiajs/react';
 
 interface Props {
     games?: ManagedGame[];
@@ -13,8 +13,18 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedGame, setSelectedGame] = useState<ManagedGame | null>(null);
     const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+    const [wishlistStates, setWishlistStates] = useState<{ [key: number]: boolean }>({});
     
-    const gamesPerPage = 12; // Adjusted for grid layout
+    useEffect(() => {
+        // Initialize wishlist states from games
+        const initialStates = games.reduce((acc, game) => {
+            acc[game.id] = game.in_wishlist || false;
+            return acc;
+        }, {} as { [key: number]: boolean });
+        setWishlistStates(initialStates);
+    }, [games]);
+
+    const gamesPerPage = 12;
     const indexOfLastGame = currentPage * gamesPerPage;
     const indexOfFirstGame = indexOfLastGame - gamesPerPage;
     const currentGames = games.slice(indexOfFirstGame, indexOfLastGame);
@@ -38,76 +48,88 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
         }
     };
 
+    const handleToggleWishlist = (gameId: number) => {
+        const isInWishlist = wishlistStates[gameId];
+        const endpoint = isInWishlist ? 'wishlist.remove' : 'wishlist.add';
+
+        router.post(route(endpoint, gameId), {}, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                setWishlistStates(prev => ({
+                    ...prev,
+                    [gameId]: !isInWishlist
+                }));
+            }
+        });
+    };
+
     return (
         <div className="space-y-6">
             {/* Game Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {currentGames.map((game) => {
                     const stockStatus = getStockStatus(game.quantity);
+                    const isInWishlist = wishlistStates[game.id] || false;
                     
                     return (
                         <div 
                             key={game.id}
                             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
                         >
-                            {/* Game Image */}
-                            <div className="relative h-48 bg-gray-200">
-                                <img 
-                                    src={game.background_image} 
-                                    alt={game.name}
-                                    className="w-full h-full object-cover"
-                                />
-                                <div className="absolute top-2 left-2">
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-800 text-white">
-                                        {game.genres.join(', ')}
-                                    </span>
-                                </div>
-                                <div className="absolute top-2 right-2">
-                                    <AddToWishlistButton 
-                                        gameId={game.id} 
-                                        isInWishlist={game.in_wishlist}
-                                        className="bg-white bg-opacity-75 rounded-full p-1.5 hover:bg-opacity-100"
+                            <Link href={route('games.show', game.id)}>
+                                <div className="relative">
+                                    <img 
+                                        src={game.background_image} 
+                                        alt={game.name}
+                                        className="w-full h-48 object-cover"
                                     />
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleToggleWishlist(game.id);
+                                        }}
+                                        className={`absolute top-2 right-2 p-2 rounded-full bg-white bg-opacity-75 hover:bg-opacity-100 transition-all ${
+                                            isInWishlist ? 'text-yellow-500' : 'text-gray-400'
+                                        }`}
+                                    >
+                                        <Star className={`w-5 h-5 ${isInWishlist ? 'fill-current' : ''}`} />
+                                    </button>
                                 </div>
-                            </div>
-
-                            {/* Game Details */}
-                            <div className="p-4 space-y-3">
-                                <div className="flex justify-between items-start">
-                                    <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
-                                        {game.name}
-                                    </h3>
-                                    <div className="flex items-center">
-                                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                                        <span className="ml-1 text-sm text-gray-600">
-                                            {game.rating}
+                                <div className="p-4">
+                                    <div className="flex justify-between items-start">
+                                        <h3 className="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors">
+                                            {game.name}
+                                        </h3>
+                                        <div className="flex items-center">
+                                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                                            <span className="ml-1 text-sm text-gray-600">
+                                                {game.rating}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="mt-2 flex justify-between items-center">
+                                        <span className="text-lg font-bold text-gray-900">
+                                            ${game.price}
+                                        </span>
+                                        <span className={`text-sm ${stockStatus.color}`}>
+                                            {stockStatus.text}
                                         </span>
                                     </div>
                                 </div>
-
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <div className="text-xl font-bold text-gray-900">
-                                            ${game.price}
-                                        </div>
-                                    </div>
-                                    
-                                    <button
-                                        onClick={() => {
-                                            setSelectedGame(game);
-                                            setIsCartModalOpen(true);
-                                        }}
-                                        disabled={game.quantity <= 0}
-                                        className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-medium
-                                            ${game.quantity > 0 
-                                                ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
-                                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                            } transition-colors duration-200`}
-                                    >
-                                        <ShoppingCart className="w-4 h-4 mr-2" />
-                                        Add to Cart
-                                    </button>
-                                </div>
+                            </Link>
+                            <div className="px-4 pb-4">
+                                <button
+                                    onClick={() => {
+                                        setSelectedGame(game);
+                                        setIsCartModalOpen(true);
+                                    }}
+                                    className="w-full flex items-center justify-center space-x-2 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors disabled:bg-gray-400"
+                                    disabled={game.quantity <= 0}
+                                >
+                                    <ShoppingCart className="w-5 h-5" />
+                                    <span>Add to Cart</span>
+                                </button>
                             </div>
                         </div>
                     );
@@ -116,41 +138,37 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
 
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className="flex justify-center items-center space-x-4 mt-6">
+                <div className="flex justify-center items-center space-x-4 mt-8">
                     <button
                         onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                         disabled={currentPage === 1}
-                        className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-transparent"
                     >
-                        <ChevronLeft className="w-5 h-5" />
+                        <ChevronLeft className="w-6 h-6" />
                     </button>
-                    
-                    <span className="text-sm text-gray-600">
+                    <span className="text-gray-700">
                         Page {currentPage} of {totalPages}
                     </span>
-                    
                     <button
                         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                         disabled={currentPage === totalPages}
-                        className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:hover:bg-transparent"
                     >
-                        <ChevronRight className="w-5 h-5" />
+                        <ChevronRight className="w-6 h-6" />
                     </button>
                 </div>
             )}
 
             {/* Add to Cart Modal */}
-            {selectedGame && (
-                <AddToCartModal
-                    isOpen={isCartModalOpen}
-                    onClose={() => {
-                        setIsCartModalOpen(false);
-                        setSelectedGame(null);
-                    }}
-                    onConfirm={handleAddToCart}
-                    game={selectedGame}
-                />
-            )}
+            <AddToCartModal
+                isOpen={isCartModalOpen}
+                onClose={() => {
+                    setIsCartModalOpen(false);
+                    setSelectedGame(null);
+                }}
+                onAddToCart={handleAddToCart}
+                game={selectedGame}
+            />
         </div>
     );
 }
