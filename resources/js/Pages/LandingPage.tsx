@@ -33,7 +33,7 @@ const LandingPage = () => {
     useEffect(() => {
         const fetchGames = async () => {
             try {
-                const data = await rawgApi.getGames(1, 6); // Get first 6 games
+                const data = await rawgApi.getGames(1, 8); // Get first 6 games
                 const sortedGames = data.results.sort((a: Game, b: Game) => {
                     return new Date(b.released).getTime() - new Date(a.released).getTime();
                 });
@@ -60,7 +60,7 @@ const LandingPage = () => {
                     });
                     setRecentGames(sortedGames);
                 } else {
-                    const data = await rawgApi.getGames(1, 6);
+                    const data = await rawgApi.getGames(1, 8);
                     const sortedGames = data.results.sort((a: Game, b: Game) => {
                         return new Date(b.released).getTime() - new Date(a.released).getTime();
                     });
