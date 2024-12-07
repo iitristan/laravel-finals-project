@@ -39,9 +39,9 @@ return new class extends Migration
         }
 
         // Remove the genres column from games table
-        Schema::table('games', function (Blueprint $table) {
-            $table->dropColumn('genres');
-        });
+        // Schema::table('games', function (Blueprint $table) {
+        //     $table->dropColumn('genres');
+        // });
     }
 
     public function down(): void

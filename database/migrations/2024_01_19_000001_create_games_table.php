@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('quantity');
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->float('rating')->nullable();
-            $table->json('genres')->nullable();
             $table->timestamps();
         });
     }
