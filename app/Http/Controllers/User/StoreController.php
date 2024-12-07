@@ -18,6 +18,17 @@ class StoreController extends Controller
             ->where('status', 'active')
             ->get();
 
+        // Add wishlist information to games
+        if (Auth::check()) {
+            $wishlist = Auth::user()->wishlist;
+            if ($wishlist) {
+                $wishlistGameIds = $wishlist->games()->pluck('games.id')->toArray();
+                $games->each(function ($game) use ($wishlistGameIds) {
+                    $game->in_wishlist = in_array($game->id, $wishlistGameIds);
+                });
+            }
+        }
+
         return Inertia::render('User/GameStore', [
             'games' => $games
         ]);
@@ -130,5 +141,22 @@ class StoreController extends Controller
         }
 
         return back()->with('error', 'Cart is already empty');
+    }
+
+    public function show(Game $game)
+    {
+        $game->load('genres');
+        
+        // Add wishlist information
+        if (Auth::check()) {
+            $wishlist = Auth::user()->wishlist;
+            if ($wishlist) {
+                $game->in_wishlist = $wishlist->games()->where('games.id', $game->id)->exists();
+            }
+        }
+
+        return Inertia::render('User/GameDetails', [
+            'game' => $game
+        ]);
     }
 }

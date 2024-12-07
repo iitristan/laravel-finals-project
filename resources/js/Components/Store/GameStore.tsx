@@ -2,6 +2,7 @@ import { ManagedGame } from '@/types/game';
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ShoppingCart, Star } from 'lucide-react';
 import AddToCartModal from './AddToCartModal';
+import AddToWishlistButton from '@/Components/Wishlist/AddToWishlistButton';
 
 interface Props {
     games?: ManagedGame[];
@@ -60,6 +61,13 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
                                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-800 text-white">
                                         {game.genres.join(', ')}
                                     </span>
+                                </div>
+                                <div className="absolute top-2 right-2">
+                                    <AddToWishlistButton 
+                                        gameId={game.id} 
+                                        isInWishlist={game.in_wishlist}
+                                        className="bg-white bg-opacity-75 rounded-full p-1.5 hover:bg-opacity-100"
+                                    />
                                 </div>
                             </div>
 

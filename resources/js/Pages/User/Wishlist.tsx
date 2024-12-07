@@ -1,8 +1,14 @@
 import React from 'react';
 import UserNavbar from '@/Navbars/UserNavbar';
 import { Head } from '@inertiajs/react';
+import WishlistContainer from '@/Components/Wishlist/WishlistContainer';
+import { Game } from '@/types';
 
-const Wishlist = () => {
+interface WishlistProps {
+    wishlistItems: Game[];
+}
+
+const Wishlist: React.FC<WishlistProps> = ({ wishlistItems }) => {
     return (
         <>
             <Head title="Wishlist" />
@@ -12,7 +18,7 @@ const Wishlist = () => {
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             <h1 className="text-2xl font-bold mb-4">My Wishlist</h1>
-                            {/* Add your wishlist content here */}
+                            <WishlistContainer items={wishlistItems} />
                         </div>
                     </div>
                 </div>

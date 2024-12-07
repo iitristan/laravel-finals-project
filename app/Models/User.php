@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Cart; // Add this line to import the Cart model
+use App\Models\Wishlist; // Add this line to import the Wishlist model
 
 class User extends Authenticatable
 {
@@ -50,5 +51,10 @@ class User extends Authenticatable
     public function cart()
     {
         return $this->hasOne(Cart::class);
+    }
+
+    public function wishlist()
+    {
+        return $this->hasOne(Wishlist::class);
     }
 }

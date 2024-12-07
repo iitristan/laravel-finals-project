@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\User\StoreController;
+use App\Http\Controllers\User\WishlistController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -57,6 +58,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Store Routes
     Route::get('/store', [StoreController::class, 'index'])->name('store');
+    Route::get('/games/{game}', [StoreController::class, 'show'])->name('games.show');
 
     // Cart Routes
     Route::middleware(['auth'])->group(function () {
@@ -71,7 +73,8 @@ Route::middleware(['auth'])->group(function () {
         return Inertia::render('User/Orders');
     })->name('orders');
 
-    Route::get('/wishlist', function () {
-        return Inertia::render('User/Wishlist');
-    })->name('wishlist');
+    // Wishlist Routes
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
+    Route::post('/wishlist/add/{game}', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
+    Route::post('/wishlist/remove/{game}', [WishlistController::class, 'removeFromWishlist'])->name('wishlist.remove');
 });
