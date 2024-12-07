@@ -2,7 +2,7 @@ import React from 'react';
 import UserNavbar from '@/Navbars/UserNavbar';
 import { Head } from '@inertiajs/react';
 import WishlistContainer from '@/Components/Wishlist/WishlistContainer';
-import { Game } from '@/types';
+import { ManagedGame as Game } from '@/types/game';
 
 interface WishlistProps {
     wishlistItems: Game[];

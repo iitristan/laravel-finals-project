@@ -1,4 +1,3 @@
-import React from 'react';
 import UserNavbar from '@/Navbars/UserNavbar';
 import { Head } from '@inertiajs/react';
 import { router } from '@inertiajs/react';

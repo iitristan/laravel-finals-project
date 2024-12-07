@@ -51,8 +51,8 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
     const handleToggleWishlist = (gameId: number) => {
         const isInWishlist = wishlistStates[gameId];
         const endpoint = isInWishlist ? 'wishlist.remove' : 'wishlist.add';
-
-        router.post(route(endpoint, gameId), {}, {
+        
+        router.post(route(endpoint, [[gameId]]), {}, {
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {

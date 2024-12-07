@@ -17,4 +17,5 @@ export interface ManagedGame extends Game {
     price: number;
     quantity: number;
     status: 'active' | 'inactive';
+    in_wishlist?: boolean;
 } 

@@ -5,11 +5,11 @@ import { ManagedGame } from '@/types/game';
 interface Props {
     isOpen: boolean;
     onClose: () => void;
-    onConfirm: (quantity: number) => void;
-    game: ManagedGame;
+    onAddToCart: (quantity: number) => void;
+    game?: ManagedGame | null;
 }
 
-export default function AddToCartModal({ isOpen, onClose, onConfirm, game }: Props) {
+export default function AddToCartModal({ isOpen, onClose, onAddToCart, game }: Props) {
     const [quantity, setQuantity] = useState(1);
 
     useEffect(() => {
@@ -19,7 +19,7 @@ export default function AddToCartModal({ isOpen, onClose, onConfirm, game }: Pro
     }, [isOpen]);
 
     const handleIncrement = () => {
-        if (quantity < game.quantity) {
+        if (game && quantity < game.quantity) {
             setQuantity(prev => prev + 1);
         }
     };
@@ -31,7 +31,7 @@ export default function AddToCartModal({ isOpen, onClose, onConfirm, game }: Pro
     };
 
     const handleConfirm = () => {
-        onConfirm(quantity);
+        onAddToCart(quantity);
         onClose();
     };
 
@@ -44,7 +44,7 @@ export default function AddToCartModal({ isOpen, onClose, onConfirm, game }: Pro
                     {/* Header */}
                     <div className="flex justify-between items-center">
                         <h3 className="text-lg font-medium text-gray-900">
-                            Add {game.name} to Cart
+                            Add {game?.name} to Cart
                         </h3>
                         <button
                             onClick={onClose}
@@ -57,7 +57,7 @@ export default function AddToCartModal({ isOpen, onClose, onConfirm, game }: Pro
                     {/* Content */}
                     <div className="flex flex-col items-center space-y-4">
                         <p className="text-sm text-gray-500">
-                            Available Stock: <span className="font-medium">{game.quantity}</span>
+                            Available Stock: <span className="font-medium">{game?.quantity}</span>
                         </p>
                         
                         <div className="flex items-center space-x-4">
@@ -75,7 +75,7 @@ export default function AddToCartModal({ isOpen, onClose, onConfirm, game }: Pro
                             
                             <button
                                 onClick={handleIncrement}
-                                disabled={quantity >= game.quantity}
+                                disabled={!game || quantity >= game.quantity}
                                 className="text-gray-500 hover:text-gray-700 disabled:opacity-50"
                             >
                                 <PlusCircle className="w-6 h-6" />
@@ -83,7 +83,7 @@ export default function AddToCartModal({ isOpen, onClose, onConfirm, game }: Pro
                         </div>
 
                         <p className="text-sm font-medium text-gray-900">
-                            Total: ${(game.price * quantity).toFixed(2)}
+                            Total: ${((game?.price || 0) * quantity).toFixed(2)}
                         </p>
                     </div>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import UserNavbar from '@/Navbars/UserNavbar';
 import { Head, Link, router } from '@inertiajs/react';
 import CartItem from '@/Components/Cart/CartItem';

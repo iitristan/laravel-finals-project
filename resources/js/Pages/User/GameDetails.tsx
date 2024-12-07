@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import UserNavbar from '@/Navbars/UserNavbar';
-import { Game } from '@/types';
+import { ManagedGame as Game } from '@/types/game';
 import AddToWishlistButton from '@/Components/Wishlist/AddToWishlistButton';
 import { router } from '@inertiajs/react';
-import { CalendarDays, Star, Clock, Globe, Users, Gamepad, Award } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 interface Props {
     game: Game;
@@ -17,18 +17,6 @@ const GameDetails = ({ game }: Props) => {
         router.post(route('cart.add', game.id), {
             quantity: quantity
         });
-    };
-
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    };
-
-    const formatPlatforms = (platforms: any[]) => {
-        return platforms.map(p => p.platform.name).join(', ');
     };
 
     return (
