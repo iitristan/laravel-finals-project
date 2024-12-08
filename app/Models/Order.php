@@ -3,10 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
-    protected $fillable = ['user_id', 'total', 'status'];
+    protected $fillable = ['user_id', 'total', 'status', 'order_number'];
+
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($order) {
+            $order->order_number = strtoupper(Str::random(8));
+        });
+    }
 
     public function user()
     {

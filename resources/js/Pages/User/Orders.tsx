@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 
 interface Order {
     id: number;
+    order_number: string;
     total: number;
     status: string;
     created_at: string;
@@ -19,6 +20,15 @@ interface Props {
 }
 
 const Orders = ({ orders = [] }: Props) => {
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
     return (
         <>
             <Head title="My Orders" />
@@ -36,10 +46,8 @@ const Orders = ({ orders = [] }: Props) => {
                                         <div key={order.id} className="border rounded-lg p-4">
                                             <div className="flex justify-between mb-4">
                                                 <div>
-                                                    <p className="font-semibold">Order #{order.id}</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        {new Date(order.created_at).toLocaleDateString()}
-                                                    </p>
+                                                    <p className="font-semibold">Ordered on {formatDate(order.created_at)}</p>
+                                                    <p className="font-semibold">Order #{order.order_number}</p>
                                                 </div>
                                                 <div className="text-right">
                                                     <p className="font-semibold">Total: ${order.total}</p>

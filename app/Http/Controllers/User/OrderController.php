@@ -49,12 +49,11 @@ class OrderController extends Controller
             ->orders()
             ->with('games')
             ->orderBy('created_at', 'desc')
-            ->get();
-
-        return Inertia::render('User/Orders', [
-            'orders' => $orders->map(function ($order) {
+            ->get()
+            ->map(function ($order) {
                 return [
                     'id' => $order->id,
+                    'order_number' => $order->order_number,
                     'total' => $order->total,
                     'status' => $order->status,
                     'created_at' => $order->created_at,
@@ -67,7 +66,10 @@ class OrderController extends Controller
                         ];
                     })
                 ];
-            })
+            });
+
+        return Inertia::render('User/Orders', [
+            'orders' => $orders
         ]);
     }
 }
