@@ -49,8 +49,8 @@ export default function CartItem({ game, quantity, onRemove, onUpdateQuantity }:
                     className="w-20 h-20 object-cover rounded-lg"
                 />
                 <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900">{game.name}</h3>
-                    <p className="text-sm text-gray-500">Price: ${game.price}</p>
+                    <h3 className="text-lg font-medium text-white">{game.name}</h3>
+                    <p className="text-sm text-gray-100">Price: ${game.price}</p>
                 </div>
             </div>
 
@@ -65,16 +65,16 @@ export default function CartItem({ game, quantity, onRemove, onUpdateQuantity }:
                     max={game.quantity}
                     value={quantity}
                     onChange={handleQuantityChange}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-black"
                 />
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-100">
                     {game.quantity} available
                 </p>
             </div>
 
             {/* Subtotal */}
             <div className="w-32 text-right">
-                <p className="text-lg font-medium text-gray-900">
+                <p className="text-lg font-medium text-gray-100">
                     ${(game.price * quantity).toFixed(2)}
                 </p>
             </div>

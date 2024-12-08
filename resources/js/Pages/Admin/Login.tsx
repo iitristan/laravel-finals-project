@@ -18,17 +18,17 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
+        <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+            <div className="max-w-md w-full space-y-8 p-8 bg-gray-800 rounded-lg shadow-lg">
                 <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    <h2 className="text-center text-3xl font-extrabold">
                         Admin Login
                     </h2>
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="rounded-md shadow-sm -space-y-px">
+                    <div className="rounded-md shadow-sm space-y-4">
                         <div>
-                            <label htmlFor="email" className="sr-only">
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-300">
                                 Email address
                             </label>
                             <input
@@ -36,10 +36,10 @@ const Login: React.FC = () => {
                                 name="email"
                                 type="email"
                                 required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Email address"
+                                className="appearance-none block w-full px-4 py-2 border border-gray-600 bg-gray-700 placeholder-gray-400 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                placeholder="Enter your email"
                                 value={data.email}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                     setData('email', e.target.value)
                                 }
                             />
@@ -48,7 +48,7 @@ const Login: React.FC = () => {
                             )}
                         </div>
                         <div>
-                            <label htmlFor="password" className="sr-only">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-300">
                                 Password
                             </label>
                             <input
@@ -56,10 +56,10 @@ const Login: React.FC = () => {
                                 name="password"
                                 type="password"
                                 required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Password"
+                                className="appearance-none block w-full px-4 py-2 border border-gray-600 bg-gray-700 placeholder-gray-400 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                placeholder="Enter your password"
                                 value={data.password}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                     setData('password', e.target.value)
                                 }
                             />
@@ -73,7 +73,7 @@ const Login: React.FC = () => {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
                         >
                             {processing ? 'Signing in...' : 'Sign in'}
                         </button>
@@ -82,6 +82,6 @@ const Login: React.FC = () => {
             </div>
         </div>
     );
-}
+};
 
 export default Login;

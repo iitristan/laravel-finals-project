@@ -50,7 +50,7 @@ const WelcomeNavbar: React.FC = () => {
                     {/* Logo */}
                     <div className="flex-shrink-0">
                         <span className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-purple-600 hover:to-indigo-600 transition-all duration-300">
-                            Migz's Gaming Hub
+                            Gamehub
                         </span>
                     </div>
 

@@ -26,12 +26,12 @@ const WishlistItem: React.FC<WishlistItemProps> = ({ game }) => {
                 <div>
                     <Link 
                         href={route('games.show', game.id)} 
-                        className="text-lg font-semibold text-gray-900 hover:text-indigo-600"
+                        className="text-lg font-semibold  text-white hover:text-indigo-600 "
                     >
                         {game.name}
                     </Link>
-                    <p className="text-gray-600">${game.price}</p>
-                    <div className="text-sm text-gray-500">
+                    <p className="text-gray-100">${game.price}</p>
+                    <div className="text-sm text-gray-100">
                         {game.genres.map(genre => genre.name).join(', ')}
                     </div>
                 </div>

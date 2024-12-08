@@ -23,7 +23,7 @@ const WishlistContainer: React.FC<WishlistContainerProps> = ({ items }) => {
     }
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 text-white">
             {items.map((game) => (
                 <WishlistItem
                     key={game.id}

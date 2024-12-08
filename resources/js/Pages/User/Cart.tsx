@@ -26,10 +26,9 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
     const handleRemoveFromCart = (gameId: number) => {
         const updatedItems = items.filter(item => item.game.id !== gameId);
         setItems(updatedItems);
-        
-        // Recalculate total
-        const newTotal = updatedItems.reduce((sum, item) => 
-            sum + (item.game.price * item.quantity), 0);
+
+        const newTotal = updatedItems.reduce((sum, item) =>
+            sum + item.game.price * item.quantity, 0);
         setCartTotal(newTotal);
     };
 
@@ -42,16 +41,13 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
         });
         setItems(updatedItems);
 
-        // Recalculate total
-        const newTotal = updatedItems.reduce((sum, item) => 
-            sum + (item.game.price * item.quantity), 0);
+        const newTotal = updatedItems.reduce((sum, item) =>
+            sum + item.game.price * item.quantity, 0);
         setCartTotal(newTotal);
 
-        router.post(`/cart/update/${gameId}`, {
-            quantity
-        }, {
+        router.post(`/cart/update/${gameId}`, { quantity }, {
             preserveState: true,
-            preserveScroll: true
+            preserveScroll: true,
         });
     };
 
@@ -62,7 +58,7 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                 onSuccess: () => {
                     setItems([]);
                     setCartTotal(0);
-                }
+                },
             });
         }
     };
@@ -71,39 +67,43 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
         <>
             <Head title="Cart" />
             <UserNavbar />
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
+            <div className="bg-gray-900 text-white min-h-screen pt-16">
+                {/* Hero Section */}
+                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 py-12 text-center">
+                    <h1 className="text-4xl font-extrabold">Shopping Cart</h1>
+                    <p className="text-lg text-gray-200 mt-4">
+                        Review your selected games and proceed to checkout.
+                    </p>
+                </div>
+
+                {/* Cart Content */}
+                <div className="max-w-7xl mx-auto py-12 px-6 sm:px-8">
+                    <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                        <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
-                                <div className="flex items-center gap-4">
-                                    <h1 className="text-2xl font-bold">Shopping Cart</h1>
-                                    {items.length > 0 && (
-                                        <button
-                                            onClick={handleRemoveAll}
-                                            className="text-red-600 hover:text-red-700 text-sm font-medium"
-                                        >
-                                            Remove All
-                                        </button>
-                                    )}
-                                </div>
-                                <p className="text-lg">
-                                    Total: <span className="font-bold">${cartTotal.toFixed(2)}</span>
-                                </p>
+                                <h2 className="text-2xl font-bold">Your Cart</h2>
+                                {items.length > 0 && (
+                                    <button
+                                        onClick={handleRemoveAll}
+                                        className="text-red-400 hover:text-red-300 text-sm font-medium"
+                                    >
+                                        Remove All
+                                    </button>
+                                )}
                             </div>
 
                             {items.length === 0 ? (
                                 <div className="text-center py-12">
-                                    <p className="text-gray-500 text-lg">Your cart is empty</p>
+                                    <p className="text-gray-400 text-lg">Your cart is empty</p>
                                     <Link
                                         href={route('store')}
-                                        className="mt-4 inline-block text-indigo-600 hover:text-indigo-500"
+                                        className="mt-4 inline-block bg-indigo-600 text-white py-3 px-6 rounded-full hover:bg-indigo-700 transition-all"
                                     >
                                         Continue Shopping
                                     </Link>
                                 </div>
                             ) : (
-                                <div className="space-y-6">
+                                <div className="space-y-6 text-white">
                                     {items.map((item) => (
                                         <CartItem
                                             key={item.game.id}
@@ -117,7 +117,7 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                                     <div className="mt-8 flex justify-between items-center">
                                         <Link
                                             href={route('store')}
-                                            className="text-indigo-600 hover:text-indigo-500"
+                                            className="text-indigo-400 hover:text-indigo-300"
                                         >
                                             Continue Shopping
                                         </Link>
@@ -125,23 +125,22 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                                             onClick={() => {
                                                 console.log('Starting checkout with items:', items);
                                                 router.post(route('checkout'), {
-                                                    cartItems: JSON.stringify(items)
+                                                    cartItems: JSON.stringify(items),
                                                 }, {
                                                     onSuccess: () => {
                                                         console.log('Checkout successful');
-                                                        // Clear cart in backend
                                                         router.post('/cart/remove-all', {}, {
                                                             onSuccess: () => {
                                                                 setItems([]);
                                                                 setCartTotal(0);
                                                                 router.visit(route('orders'));
-                                                            }
+                                                            },
                                                         });
                                                     },
                                                     onError: (errors) => {
                                                         console.error('Checkout failed:', errors);
                                                         alert('Checkout failed. Please try again.');
-                                                    }
+                                                    },  
                                                 });
                                             }}
                                             className="bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 transition-colors"
@@ -150,6 +149,9 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                                             Proceed to Checkout
                                         </button>
                                     </div>
+                                    <p className="text-right text-lg font-bold mt-4">
+                                        Total: ${cartTotal.toFixed(2)}
+                                    </p>
                                 </div>
                             )}
                         </div>
