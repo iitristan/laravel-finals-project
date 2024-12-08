@@ -19,7 +19,6 @@ class OrderController extends Controller
         }
 
         try {
-
             $total = array_sum(array_map(function($item) {
                 return $item['quantity'] * $item['game']['price'];
             }, $cartItems));

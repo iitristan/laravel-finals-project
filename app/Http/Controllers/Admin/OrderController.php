@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -38,5 +39,19 @@ class OrderController extends Controller
         return Inertia::render('Admin/ManageOrders', [
             'orders' => $orders
         ]);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $status = $request->input('status');
+        if (!$status) {
+            throw new \Exception('Status is required');
+        }
+
+        $order = Order::findOrFail($id);
+        $order->status = $status;
+        $order->saveOrFail();
+
+        return redirect()->back();
     }
 }

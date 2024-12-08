@@ -1,5 +1,6 @@
 import AdminNavbar from '@/Navbars/AdminNavbar';
-import { Head } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
+import axios from 'axios';
 
 interface Game {
     id: number;
@@ -27,6 +28,35 @@ interface Props {
 }
 
 export default function ManageOrders({ orders = [] }: Props) {
+    const { post, processing } = useForm();
+
+    const updateOrderStatus = (orderId: number, newStatus: string) => {
+        axios.post(route('admin.orders.update-status', orderId), {
+            status: newStatus,
+        }, {
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            }
+        }).then(() => {
+            window.location.reload();
+        }).catch((error) => {
+            console.error('Failed to update:', error);
+        });
+    };
+
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'to be packed':
+                return 'text-yellow-500';
+            case 'to be shipped':
+                return 'text-blue-500';
+            case 'shipped':
+                return 'text-green-500';
+            default:
+                return 'text-gray-500';
+        }
+    };
+
     return (
         <>
             <Head title="Manage Orders" />
@@ -54,13 +84,29 @@ export default function ManageOrders({ orders = [] }: Props) {
                                                 </div>
                                                 <div className="text-right">
                                                     <p className="font-semibold">Total: ${order.total}</p>
-                                                    <p className={`text-sm ${
-                                                        order.status === 'completed' 
-                                                            ? 'text-green-500' 
-                                                            : 'text-yellow-500'
-                                                    }`}>
+                                                    <p className={`text-sm ${getStatusColor(order.status)}`}>
                                                         Status: {order.status}
                                                     </p>
+                                                    <div className="mt-2 space-x-2">
+                                                        {order.status === 'to be packed' && (
+                                                            <button
+                                                                onClick={() => updateOrderStatus(order.id, 'to be shipped')}
+                                                                disabled={processing}
+                                                                className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition"
+                                                            >
+                                                                Mark as To Be Shipped
+                                                            </button>
+                                                        )}
+                                                        {order.status === 'to be shipped' && (
+                                                            <button
+                                                                onClick={() => updateOrderStatus(order.id, 'shipped')}
+                                                                disabled={processing}
+                                                                className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition"
+                                                            >
+                                                                Mark as Shipped
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="mt-4">

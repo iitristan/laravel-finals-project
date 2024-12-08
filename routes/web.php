@@ -42,7 +42,9 @@ Route::prefix('admin')->group(function () {
         // Orders Management
         Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
         Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
-        Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.update-status');
+        Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus'])
+            ->name('admin.orders.update-status')
+            ->middleware(['auth', 'verified']);
         
         // Users Management
         Route::get('users', [UserController::class, 'index'])->name('admin.users');
@@ -77,4 +79,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
     Route::post('/wishlist/add/{game}', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
     Route::post('/wishlist/remove/{game}', [WishlistController::class, 'removeFromWishlist'])->name('wishlist.remove');
+});
+
+Route::middleware(['auth:admin'])->group(function () {
+    Route::post('/admin/orders/{id}/status', [OrderController::class, 'updateStatus'])
+        ->name('admin.orders.update-status')
+        ->middleware(['auth', 'verified']);
 });
