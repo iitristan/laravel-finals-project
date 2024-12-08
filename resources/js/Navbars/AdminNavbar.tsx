@@ -26,7 +26,7 @@ const AdminNavbar: React.FC = () => {
                                     Manage Games
                                 </Link>
                                 <Link
-                                    href={route('admin.orders')}
+                                    href={route('admin.orders.index')}
                                     className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
                                 >
                                     Manage Orders

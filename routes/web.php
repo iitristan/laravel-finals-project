@@ -40,9 +40,9 @@ Route::prefix('admin')->group(function () {
         Route::delete('games/{game}', [GameController::class, 'destroy'])->name('admin.games.destroy');
         
         // Orders Management
-        Route::get('orders', [Admin\OrderController::class, 'index'])->name('admin.orders');
-        Route::get('orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
-        Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.update-status');
+        Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
+        Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
+        Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.update-status');
         
         // Users Management
         Route::get('users', [UserController::class, 'index'])->name('admin.users');

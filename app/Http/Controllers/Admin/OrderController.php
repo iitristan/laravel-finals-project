@@ -11,50 +11,32 @@ class OrderController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Admin/ManageOrders');
-    }
+        $orders = Order::with(['user', 'games'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'total' => $order->total,
+                    'status' => $order->status,
+                    'created_at' => $order->created_at,
+                    'user' => [
+                        'id' => $order->user->id,
+                        'name' => $order->user->name,
+                    ],
+                    'games' => $order->games->map(function ($game) {
+                        return [
+                            'id' => $game->id,
+                            'name' => $game->name,
+                            'price' => $game->pivot->price,
+                            'quantity' => $game->pivot->quantity,
+                        ];
+                    })
+                ];
+            });
 
-    public function show($id)
-    {
-        return Inertia::render('Admin/Orders/Show');
-    }
-
-    public function updateStatus(Request $request, $id)
-    {
-        // Add order status update logic
-    }
-
-    public function store(Request $request)
-    {
-        $user = auth()->user();
-        $cartItems = session()->get('cart', []);
-        
-        if (empty($cartItems)) {
-            return redirect()->back()->with('error', 'Cart is empty');
-        }
-
-        $total = collect($cartItems)->sum(function ($item) {
-            return $item['game']->price * $item['quantity'];
-        });
-
-        // Create the order
-        $order = Order::create([
-            'user_id' => $user->id,
-            'total' => $total,
-            'status' => 'pending'
+        return Inertia::render('Admin/ManageOrders', [
+            'orders' => $orders
         ]);
-
-        // Attach games to the order
-        foreach ($cartItems as $item) {
-            $order->games()->attach($item['game']->id, [
-                'quantity' => $item['quantity'],
-                'price' => $item['game']->price
-            ]);
-        }
-
-        // Clear the cart
-        session()->forget('cart');
-
-        return redirect()->route('orders');
     }
 }
