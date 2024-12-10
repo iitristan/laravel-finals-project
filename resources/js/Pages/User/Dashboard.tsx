@@ -3,14 +3,31 @@ import UserNavbar from "@/Navbars/UserNavbar";
 import { Head } from "@inertiajs/react";
 import { rawgApi } from "@/services/rawgApi"; // Replace with your actual API service
 
+// Add interfaces at the top
+interface Game {
+    id: number;
+    name: string;
+    background_image: string;
+    released: string;
+    rating: number;
+    slug: string;
+}
+
+interface UserStats {
+    totalGamesPlayed: number;
+    totalWishlistItems: number;
+    totalHoursPlayed: number;
+}
+
 const Dashboard = () => {
-    const [featuredGames, setFeaturedGames] = useState([]);
+    const [featuredGames, setFeaturedGames] = useState<Game[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [userStats, setUserStats] = useState({
         totalGamesPlayed: 25,
         totalWishlistItems: 10,
         totalHoursPlayed: 120,
     });
-
 
     // Utility to shuffle an array
     const shuffleArray = (array) => {
@@ -23,20 +40,68 @@ const Dashboard = () => {
 
     useEffect(() => {
         const fetchFeaturedGames = async () => {
+            setIsLoading(true);
+            setError(null);
             try {
-                const data = await rawgApi.getGames(1, 8); // Fetch 8 games
-                const randomizedGames = shuffleArray(data.results || []).slice(
-                    0,
-                    4
-                ); // Randomize and limit to 4
+                const data = await rawgApi.getGames(1, 8);
+                const randomizedGames = shuffleArray(data.results || []).slice(0, 4);
                 setFeaturedGames(randomizedGames);
             } catch (error) {
+                setError('Failed to load featured games. Please try again later.');
                 console.error("Error fetching featured games:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchFeaturedGames();
     }, []);
+
+    // Extract GameCard component
+    const GameCard = ({ game }: { game: Game }) => (
+        <div className="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <img
+                src={game.background_image}
+                alt={game.name}
+                className="w-full h-48 object-cover"
+                loading="lazy"
+            />
+            <div className="p-4">
+                <h3 className="font-semibold text-lg mb-2 text-white truncate">
+                    {game.name}
+                </h3>
+                <p className="text-gray-400 text-sm mb-2">
+                    Released: {new Date(game.released).toLocaleDateString()}
+                </p>
+                <div className="flex items-center mb-2">
+                    <span className="text-yellow-400 mr-1">★</span>
+                    <span className="text-gray-400 text-sm">
+                        {game.rating ? game.rating.toFixed(1) : "N/A"}
+                    </span>
+                </div>
+                <div className="mt-4 flex justify-between items-center">
+                    <a
+                        href={`/games/${game.slug}`}
+                        className="text-indigo-400 hover:text-indigo-300 font-semibold"
+                    >
+                        View Details
+                    </a>
+                    <button className="text-gray-400 hover:text-yellow-400 transition-colors">
+                        <span className="sr-only">Add to wishlist</span>
+                        ☆
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
+    // Extract StatsCard component
+    const StatsCard = ({ title, value, bgColor }: { title: string; value: number; bgColor: string }) => (
+        <div className={`${bgColor} rounded-lg p-4 shadow-lg transform hover:scale-105 transition-transform`}>
+            <h3 className="text-sm font-medium mb-2 text-white/90">{title}</h3>
+            <p className="text-3xl font-bold text-white">{value}</p>
+        </div>
+    );
 
     return (
         <>
@@ -65,89 +130,48 @@ const Dashboard = () => {
                 </div>
 
                 {/* Featured Games Section */}
-                <div
-                    id="featured"
-                    className="max-w-7xl mx-auto py-12 px-6 sm:px-8"
-                >
+                <div id="featured" className="max-w-7xl mx-auto py-12 px-6 sm:px-8">
                     <h2 className="text-3xl font-semibold text-center mb-8 text-white">
                         Featured Games for You
                     </h2>
-                    {featuredGames.length === 0 ? (
+                    {isLoading ? (
                         <div className="text-center text-gray-400">
-                            Loading featured games...
+                            <div className="animate-spin inline-block w-8 h-8 border-4 border-t-indigo-500 border-gray-800 rounded-full" />
+                            <p className="mt-4">Loading featured games...</p>
                         </div>
+                    ) : error ? (
+                        <div className="text-center text-red-400">{error}</div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {featuredGames.map((game) => (
-                                <div
-                                    key={game.id}
-                                    className="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
-                                >
-                                    <img
-                                        src={game.background_image}
-                                        alt={game.name}
-                                        className="w-full h-48 object-cover"
-                                    />
-                                    <div className="p-4">
-                                        <h3 className="font-semibold text-lg mb-2 text-white">
-                                            {game.name}
-                                        </h3>
-                                        <p className="text-gray-400 text-sm mb-2">
-                                            Released:{" "}
-                                            {new Date(
-                                                game.released
-                                            ).toLocaleDateString()}
-                                        </p>
-                                        <p className="text-gray-400 text-sm">
-                                            Rating: {game.rating || "N/A"}
-                                        </p>
-                                        <div className="mt-4">
-                                            <a
-                                                href={`/games/${game.slug}`}
-                                                className="text-indigo-400 hover:text-indigo-300 font-semibold"
-                                            >
-                                                View Details
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                                <GameCard key={game.id} game={game} />
                             ))}
                         </div>
                     )}
                 </div>
 
-                {/* Personal Progress Section */}
-                <div className="bg-gray-800 py-12">
-                    {/* Gaming Progress Section */}
-                    <div className="max-w-7xl mx-auto py-12 px-6 sm:px-8">
-                        <h2 className="text-3xl font-semibold text-center mb-8 text-white">
+                {/* Gaming Progress Section */}
+                <div className="bg-gray-800 py-8">
+                    <div className="max-w-7xl mx-auto px-6 sm:px-8">
+                        <h2 className="text-2xl font-semibold text-center mb-6 text-white">
                             Your Gaming Progress
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div className="bg-indigo-600 rounded-lg p-6 shadow-lg">
-                                <h3 className="text-lg font-semibold mb-4">
-                                    Total Games Played
-                                </h3>
-                                <p className="text-4xl font-bold">
-                                    {userStats.totalGamesPlayed}
-                                </p>
-                            </div>
-                            <div className="bg-purple-600 rounded-lg p-6 shadow-lg">
-                                <h3 className="text-lg font-semibold mb-4">
-                                    Wishlist Items
-                                </h3>
-                                <p className="text-4xl font-bold">
-                                    {userStats.totalWishlistItems}
-                                </p>
-                            </div>
-                            <div className="bg-pink-600 rounded-lg p-6 shadow-lg">
-                                <h3 className="text-lg font-semibold mb-4">
-                                    Total Hours Played
-                                </h3>
-                                <p className="text-4xl font-bold">
-                                    {userStats.totalHoursPlayed}
-                                </p>
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <StatsCard
+                                title="Total Games Played"
+                                value={userStats.totalGamesPlayed}
+                                bgColor="bg-indigo-600"
+                            />
+                            <StatsCard
+                                title="Wishlist Items"
+                                value={userStats.totalWishlistItems}
+                                bgColor="bg-purple-600"
+                            />
+                            <StatsCard
+                                title="Total Hours Played"
+                                value={userStats.totalHoursPlayed}
+                                bgColor="bg-pink-600"
+                            />
                         </div>
                     </div>
                 </div>

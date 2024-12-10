@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm, Head } from '@inertiajs/react';
+import { useForm, Head, Link } from '@inertiajs/react';
 
 interface RegisterForm {
     name: string;
@@ -159,6 +159,12 @@ export default function Register() {
                     >
                         {processing ? 'Creating Account...' : 'Create Account'}
                     </button>
+                    <Link
+                        href="/login"
+                        className="font-medium w-full mt-4 block text-center text-indigo-500 hover:text-indigo-400 py-2 px-4 rounded-md transition"
+                    >
+                        Return to Login
+                    </Link>
                 </form>
             </div>
         </div>

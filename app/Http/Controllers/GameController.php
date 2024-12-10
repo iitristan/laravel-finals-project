@@ -27,4 +27,12 @@ class GameController extends Controller
         $games = Game::all();
         return response()->json($games);
     }
+
+    public function show(string $slug)
+    {
+        $game = Game::where('slug', $slug)->firstOrFail();
+        return inertia('Games/Show', [
+            'game' => $game
+        ]);
+    }
 }
