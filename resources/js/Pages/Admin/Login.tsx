@@ -1,5 +1,5 @@
-import React from 'react';
-import { useForm } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { useForm, Head } from '@inertiajs/react';
 
 interface LoginForm {
     email: string;
@@ -7,19 +7,65 @@ interface LoginForm {
 }
 
 const Login: React.FC = () => {
-    const { data, setData, post, processing, errors } = useForm<LoginForm>({
+    const { data, setData, post, processing, errors, reset } = useForm<LoginForm>({
         email: '',
         password: '',
     });
 
+    const [showPassword, setShowPassword] = useState(false);
+    const [formError, setFormError] = useState<string>('');
+
+    const validateForm = () => {
+        if (!data.email || !data.password) {
+            setFormError('All fields are required');
+            return false;
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(data.email)) {
+            setFormError('Please enter a valid email address');
+            return false;
+        }
+
+        return true;
+    };
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        post('/admin/login');
+        setFormError('');
+        
+        if (!validateForm()) return;
+
+        post('/admin/login', {
+            onSuccess: () => {
+                reset('password');
+            },
+            onError: (errors) => {
+                if (errors.credentials) {
+                    setFormError(errors.credentials);
+                    setData('password', '');
+                } else if (errors.email) {
+                    setFormError(errors.email);
+                    setData('password', '');
+                } else if (errors.password) {
+                    setFormError(errors.password);
+                    setData('password', '');
+                } else {
+                    setFormError('Invalid administrator credentials. Please contact system administrator.');
+                }
+            },
+        });
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+            <Head title="Admin Login" />
             <div className="max-w-md w-full space-y-8 p-8 bg-gray-800 rounded-lg shadow-lg">
+                {formError && (
+                    <div className="p-4 rounded-md bg-red-50 border border-red-400 text-red-700">
+                        {formError}
+                    </div>
+                )}
                 <div>
                     <h2 className="text-center text-3xl font-extrabold">
                         Admin Login

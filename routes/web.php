@@ -76,9 +76,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders', [UserOrderController::class, 'index'])->name('orders');
 
     // Wishlist Routes
-    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
-    Route::post('/wishlist/add/{game}', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
-    Route::post('/wishlist/remove/{game}', [WishlistController::class, 'removeFromWishlist'])->name('wishlist.remove');
+    Route::post('/wishlist/{game}/add', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
+    Route::delete('/wishlist/{game}/remove', [WishlistController::class, 'removeFromWishlist'])->name('wishlist.remove');
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 });
 
 Route::middleware(['auth:admin'])->group(function () {

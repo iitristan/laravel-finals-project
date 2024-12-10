@@ -9,7 +9,7 @@ interface RegisterForm {
 }
 
 export default function Register() {
-    const { data, setData, post, processing, errors } = useForm<RegisterForm>({
+    const { data, setData, post, processing, errors, reset } = useForm<RegisterForm>({
         name: '',
         email: '',
         password: '',
@@ -17,10 +17,60 @@ export default function Register() {
     });
 
     const [showPassword, setShowPassword] = useState(false);
+    const [formError, setFormError] = useState<string>('');
+
+    const validateForm = () => {
+        if (!data.name || !data.email || !data.password || !data.password_confirmation) {
+            setFormError('All fields are required');
+            return false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(data.email)) {
+            setFormError('Please enter a valid email address');
+            return false;
+        }
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        if (!passwordRegex.test(data.password)) {
+            setFormError(
+                'Password must contain at least 8 characters, including uppercase, lowercase, numbers, and special characters'
+            );
+            return false;
+        }
+
+        if (data.password !== data.password_confirmation) {
+            setFormError('Passwords do not match');
+            return false;
+        }
+
+        return true;
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/register');
+        setFormError('');
+        
+        if (!validateForm()) return;
+
+        post('/register', {
+            onSuccess: () => {
+                reset('password', 'password_confirmation');
+            },
+            onError: (errors) => {
+                if (errors.email) {
+                    setFormError(errors.email);
+                } else if (errors.password) {
+                    setFormError(errors.password);
+                } else if (errors.name) {
+                    setFormError(errors.name);
+                } else {
+                    setFormError('Registration failed. Please try again later.');
+                }
+                setData('password', '');
+                setData('password_confirmation', '');
+            },
+        });
     };
 
     return (
@@ -30,6 +80,11 @@ export default function Register() {
                 <h2 className="text-3xl font-bold text-center mb-2">Create an Account</h2>
                 <p className="text-center text-gray-400 mb-6">Sign up to get started</p>
                 <form onSubmit={handleSubmit}>
+                    {formError && (
+                        <div className="mb-4 p-4 rounded-md bg-red-50 border border-red-400 text-red-700">
+                            {formError}
+                        </div>
+                    )}
                     <div className="space-y-4">
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">

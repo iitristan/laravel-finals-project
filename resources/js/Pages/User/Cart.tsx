@@ -96,7 +96,7 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                                 <div className="text-center py-12">
                                     <p className="text-gray-400 text-lg">Your cart is empty</p>
                                     <Link
-                                        href={route('store')}
+                                        href="/store"
                                         className="mt-4 inline-block bg-indigo-600 text-white py-3 px-6 rounded-full hover:bg-indigo-700 transition-all"
                                     >
                                         Continue Shopping
@@ -116,7 +116,7 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
 
                                     <div className="mt-8 flex justify-between items-center">
                                         <Link
-                                            href={route('store')}
+                                            href="/store"
                                             className="text-indigo-400 hover:text-indigo-300"
                                         >
                                             Continue Shopping
@@ -124,7 +124,7 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                                         <button
                                             onClick={() => {
                                                 console.log('Starting checkout with items:', items);
-                                                router.post(route('checkout'), {
+                                                router.post('/checkout', {
                                                     cartItems: JSON.stringify(items),
                                                 }, {
                                                     onSuccess: () => {
@@ -133,7 +133,7 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                                                             onSuccess: () => {
                                                                 setItems([]);
                                                                 setCartTotal(0);
-                                                                router.visit(route('orders'));
+                                                                router.visit('/orders');
                                                             },
                                                         });
                                                     },

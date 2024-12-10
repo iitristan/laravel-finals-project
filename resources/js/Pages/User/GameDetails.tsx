@@ -14,7 +14,7 @@ const GameDetails = ({ game }: Props) => {
     const [quantity, setQuantity] = useState(1);
 
     const handleAddToCart = () => {
-        router.post(route('cart.add', game.id), {
+        router.post(`/cart/add/${game.id}`, {
             quantity: quantity
         });
     };

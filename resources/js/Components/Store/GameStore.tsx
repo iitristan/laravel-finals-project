@@ -50,9 +50,9 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
 
     const handleToggleWishlist = (gameId: number) => {
         const isInWishlist = wishlistStates[gameId];
-        const endpoint = isInWishlist ? 'wishlist.remove' : 'wishlist.add';
+        const endpoint = isInWishlist ? `/wishlist/${gameId}/remove` : `/wishlist/${gameId}/add`;
         
-        router.post(route(endpoint, [[gameId]]), {}, {
+        router.post(endpoint, {}, {
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
@@ -77,7 +77,7 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
                             key={game.id}
                             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
                         >
-                            <Link href={route('games.show', game.id)}>
+                            <Link href={`/games/${game.id}`}>
                                 <div className="relative">
                                     <img 
                                         src={game.background_image} 

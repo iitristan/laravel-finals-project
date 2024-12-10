@@ -3,7 +3,11 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
+<<<<<<< HEAD
         'reference' => 'a186c4dfd1dc4ce845ace9b48d5902c6c3b93448',
+=======
+        'reference' => 'e96002c27c6e6e9fceb0f0eaec275755e1903029',
+>>>>>>> ecfa80c4a52001bb0483c4bd3d0b5d2deded510b
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -397,7 +401,11 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
+<<<<<<< HEAD
             'reference' => 'a186c4dfd1dc4ce845ace9b48d5902c6c3b93448',
+=======
+            'reference' => 'e96002c27c6e6e9fceb0f0eaec275755e1903029',
+>>>>>>> ecfa80c4a52001bb0483c4bd3d0b5d2deded510b
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -1255,15 +1263,6 @@
             'install_path' => __DIR__ . '/../theseer/tokenizer',
             'aliases' => array(),
             'dev_requirement' => true,
-        ),
-        'tightenco/ziggy' => array(
-            'pretty_version' => 'v2.4.1',
-            'version' => '2.4.1.0',
-            'reference' => '8e002298678fd4d61155bb1d6e3837048235bff7',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../tightenco/ziggy',
-            'aliases' => array(),
-            'dev_requirement' => false,
         ),
         'tijsverkoyen/css-to-inline-styles' => array(
             'pretty_version' => 'v2.2.7',

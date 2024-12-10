@@ -17,6 +17,17 @@ const GameStorePage = ({ games }: Props) => {
         });
     };
 
+    const handleAddToWishlist = (gameId: number) => {
+        router.post(`/wishlist/${gameId}/add`, {}, {
+            onSuccess: () => {
+                // Handle success
+            },
+            onError: () => {
+                // Handle error
+            }
+        });
+    };
+
     return (
         <>
             <Head title="Game Store" />
@@ -35,7 +46,7 @@ const GameStorePage = ({ games }: Props) => {
                     <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                         <div className="p-6 text-black">
                             <h2 className="text-2xl font-bold mb-6 text-white">Available Games</h2>
-                            <GameStore games={games} onAddToCart={handleAddToCart} />
+                            <GameStore games={games} onAddToCart={handleAddToCart} onAddToWishlist={handleAddToWishlist} />
                         </div>
                     </div>
                 </div>

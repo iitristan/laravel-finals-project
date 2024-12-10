@@ -26,15 +26,14 @@ class WishlistController extends Controller
         $wishlist = Wishlist::firstOrCreate(['user_id' => Auth::id()]);
         
         try {
-            $wishlist->games()->attach($game->id);
-            return redirect()->back();
-        } catch (\Exception $e) {
-            // If the game is already in the wishlist, ignore the error
-            if ($e->getCode() === '23000') { // Duplicate entry error
-                return redirect()->back();
+            // Check if game is already in wishlist
+            if (!$wishlist->games()->where('game_id', $game->id)->exists()) {
+                $wishlist->games()->attach($game->id);
+                return redirect()->back()->with('success', 'Game added to wishlist');
             }
-            
-            return redirect()->back();
+            return redirect()->back()->with('info', 'Game is already in wishlist');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to add game to wishlist');
         }
     }
 
