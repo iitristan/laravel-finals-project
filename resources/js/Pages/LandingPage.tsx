@@ -8,7 +8,7 @@ interface Game {
     slug: string;
     name: string;
     released: string;
-    background_image: string;
+    background_image: string;   
     rating: number;
     genres: {
         id: number;
@@ -134,22 +134,34 @@ const LandingPage = () => {
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {recentGames.map((game) => (
-                                <div key={game.id} className="relative bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                                    <img
-                                        src={game.background_image}
-                                        alt={game.name}
-                                        className="w-full h-56 object-cover"
-                                    />
-                                    <div className="p-4">
-                                        <h3 className="font-semibold text-lg mb-2">{game.name}</h3>
-                                        <p className="text-gray-600 text-sm mb-2">Rating: {game.rating}</p>
-                                        <p className="text-gray-600 text-sm mb-2">Released: {game.released}</p>
-                                        <p className="text-gray-600 text-sm">
-                                            Genres: {game.genres.map((g) => g.name).join(', ')}
-                                        </p>
-                                        <div className="mt-4">
-                                            <a href={`/games/${game.slug}`} className="text-indigo-600 hover:text-indigo-800 font-semibold">More Info</a>
+                                <div key={game.id} className="group bg-gray-900/50 rounded-lg overflow-hidden hover:bg-gray-800/50 transition-all duration-300 flex flex-col">
+                                    <div className="relative aspect-[16/9]">
+                                        <img
+                                            src={game.background_image}
+                                            alt={game.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="p-4 space-y-2 flex-1 flex flex-col">
+                                        <h3 className="font-bold text-xl text-white">{game.name}</h3>
+                                        <div className="flex items-center text-sm text-gray-400">
+                                            <span className="flex items-center">
+                                                <span className="text-yellow-400 mr-1">★</span>
+                                                {game.rating}
+                                            </span>
+                                            <span className="mx-2">•</span>
+                                            <span>{new Date(game.released).getFullYear()}</span>
                                         </div>
+                                        <div className="text-sm text-gray-400">
+                                            {game.genres.slice(0, 2).map((g) => g.name).join(', ')}
+                                        </div>
+                                        <div className="flex-1"></div>
+                                        <a
+                                            href={`/games/${game.slug}`}
+                                            className="block w-full text-center py-2 px-4 bg-indigo-600 hover:bg-indigo-700 rounded text-white font-medium transition-colors duration-300"
+                                        >
+                                            More Info
+                                        </a>
                                     </div>
                                 </div>
                             ))}
