@@ -16,6 +16,7 @@ interface Game {
 interface UserStats {
     totalGamesPlayed: number;
     totalHoursPlayed: number;
+    gamesInWishlist: number;
 }
 
 const Dashboard = () => {
@@ -25,6 +26,7 @@ const Dashboard = () => {
     const [userStats, setUserStats] = useState({
         totalGamesPlayed: 25,
         totalHoursPlayed: 120,
+        gamesInWishlist: 8,
     });
 
     // Utility to shuffle an array
@@ -150,7 +152,7 @@ const Dashboard = () => {
                         <h2 className="text-2xl font-semibold text-center mb-6 text-white">
                             Your Gaming Progress
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <StatsCard
                                 title="Total Games Played"
                                 value={userStats.totalGamesPlayed}
@@ -160,6 +162,11 @@ const Dashboard = () => {
                                 title="Total Hours Played"
                                 value={userStats.totalHoursPlayed}
                                 bgColor="bg-pink-600"
+                            />
+                            <StatsCard
+                                title="Games in Wishlist"
+                                value={userStats.gamesInWishlist}
+                                bgColor="bg-purple-600"
                             />
                         </div>
                     </div>
