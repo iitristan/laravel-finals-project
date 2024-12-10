@@ -28,6 +28,7 @@ const Dashboard = () => {
         totalWishlistItems: 10,
         totalHoursPlayed: 120,
     });
+    const [wishlistedGames, setWishlistedGames] = useState<number[]>([]);
 
     // Utility to shuffle an array
     const shuffleArray = (array) => {
@@ -56,6 +57,15 @@ const Dashboard = () => {
 
         fetchFeaturedGames();
     }, []);
+
+    // Add toggle wishlist function
+    const toggleWishlist = (gameId: number) => {
+        setWishlistedGames(prev => 
+            prev.includes(gameId)
+                ? prev.filter(id => id !== gameId)
+                : [...prev, gameId]
+        );
+    };
 
     // Extract GameCard component
     const GameCard = ({ game }: { game: Game }) => (
@@ -86,9 +96,14 @@ const Dashboard = () => {
                     >
                         View Details
                     </a>
-                    <button className="text-gray-400 hover:text-yellow-400 transition-colors">
-                        <span className="sr-only">Add to wishlist</span>
-                        ☆
+                    <button 
+                        onClick={() => toggleWishlist(game.id)}
+                        className="text-gray-400 hover:text-yellow-400 transition-colors"
+                    >
+                        <span className="sr-only">
+                            {wishlistedGames.includes(game.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+                        </span>
+                        {wishlistedGames.includes(game.id) ? '★' : '☆'}
                     </button>
                 </div>
             </div>
