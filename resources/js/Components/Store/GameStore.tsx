@@ -75,9 +75,9 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
                     return (
                         <div 
                             key={game.id}
-                            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full"
                         >
-                            <Link href={`/games/${game.id}`}>
+                            <Link href={`/games/${game.id}`} className="flex-grow">
                                 <div className="relative">
                                     <img 
                                         src={game.background_image} 
@@ -96,19 +96,19 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
                                         <Star className={`w-5 h-5 ${isInWishlist ? 'fill-current' : ''}`} />
                                     </button>
                                 </div>
-                                <div className="p-4">
-                                    <div className="flex justify-between items-start">
-                                        <h3 className="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors">
+                                <div className="p-4 flex flex-col min-h-[120px]">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h3 className="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors line-clamp-2">
                                             {game.name}
                                         </h3>
-                                        <div className="flex items-center">
+                                        <div className="flex items-center ml-2 shrink-0">
                                             <Star className="w-4 h-4 text-yellow-400 fill-current" />
                                             <span className="ml-1 text-sm text-gray-600">
                                                 {game.rating}
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="mt-2 flex justify-between items-center">
+                                    <div className="mt-auto flex justify-between items-center">
                                         <span className="text-lg font-bold text-gray-900">
                                             ${game.price}
                                         </span>
@@ -118,7 +118,7 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
                                     </div>
                                 </div>
                             </Link>
-                            <div className="px-4 pb-4">
+                            <div className="p-4 pt-0">
                                 <button
                                     onClick={() => {
                                         setSelectedGame(game);
