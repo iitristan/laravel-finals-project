@@ -10,19 +10,19 @@ return new class extends Migration
 {
     public function up()
     {
-        // First add the column as nullable
+        // add yung column sa orders na table
         Schema::table('orders', function (Blueprint $table) {
             $table->string('order_number')->nullable()->after('id');
         });
 
-        // Generate order numbers for existing orders
+        // generate order numbers para sa mga orders
         Order::whereNull('order_number')->each(function ($order) {
             $order->update([
                 'order_number' => strtoupper(Str::random(8))
             ]);
         });
 
-        // Make the column unique and non-nullable
+        // make it unqiue and nullable
         Schema::table('orders', function (Blueprint $table) {
             $table->string('order_number')->nullable(false)->unique()->change();
         });
