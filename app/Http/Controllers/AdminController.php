@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\Admin;
 
 class AdminController extends Controller
 {
@@ -23,13 +24,22 @@ class AdminController extends Controller
             'password' => ['required'],
         ]);
 
+        // Check if admin exists
+        $admin = Admin::where('email', $credentials['email'])->first();
+        
+        if (!$admin) {
+            return back()->withErrors([
+                'credentials' => 'No administrator account found with these credentials.',
+            ]);
+        }
+
         if (Auth::guard('admin')->attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->route('admin.dashboard');
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'credentials' => 'The provided administrator credentials are invalid.',
         ]);
     }
 

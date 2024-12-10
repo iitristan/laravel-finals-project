@@ -1,7 +1,5 @@
 import AdminNavbar from '@/Navbars/AdminNavbar';
 import { Head, Link } from '@inertiajs/react';
-import route from 'ziggy-js'; // Import route from ziggy-js
-
 
 export default function UsersIndex() {
     return (
@@ -58,7 +56,7 @@ export default function UsersIndex() {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <Link
-                                                    href={route('admin.users.show', { user: 1 })}
+                                                    href={`/admin/users/${1}`}
                                                     className="text-indigo-600 hover:text-indigo-900 mr-4"
                                                 >
                                                     View Details

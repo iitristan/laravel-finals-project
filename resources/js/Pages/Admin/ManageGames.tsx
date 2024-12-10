@@ -76,7 +76,7 @@ export default function ManageGames({ games: initialGames }: Props) {
         }
 
         try {
-            const response = await axios.post(route('admin.games.store'), {
+            const response = await axios.post('/admin/games', {
                 name: game.name,
                 slug: game.slug,
                 background_image: game.background_image,

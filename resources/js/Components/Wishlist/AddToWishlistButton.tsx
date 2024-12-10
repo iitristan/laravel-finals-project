@@ -21,7 +21,7 @@ const AddToWishlistButton: React.FC<AddToWishlistButtonProps> = ({
         setIsLoading(true);
         
         if (inWishlist) {
-            router.post(route('wishlist.remove', gameId), {}, {
+            router.delete(`/wishlist/${gameId}/remove`, {
                 preserveScroll: true,
                 preserveState: true,
                 onSuccess: () => {
@@ -31,7 +31,7 @@ const AddToWishlistButton: React.FC<AddToWishlistButtonProps> = ({
                 onError: () => setIsLoading(false),
             });
         } else {
-            router.post(route('wishlist.add', gameId), {}, {
+            router.post(`/wishlist/${gameId}/add`, {}, {
                 preserveScroll: true,
                 preserveState: true,
                 onSuccess: () => {

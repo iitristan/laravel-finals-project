@@ -31,7 +31,7 @@ export default function ManageOrders({ orders = [] }: Props) {
     const { post, processing } = useForm();
 
     const updateOrderStatus = (orderId: number, newStatus: string) => {
-        axios.post(route('admin.orders.update-status', orderId), {
+        axios.post(`/admin/orders/${orderId}/status`, {
             status: newStatus,
         }, {
             headers: {

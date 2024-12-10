@@ -4,19 +4,59 @@ import { useForm, Link, Head } from '@inertiajs/react';
 interface LoginForm {
     email: string;
     password: string;
+    remember?: boolean;
 }
 
 export default function Login() {
-    const { data, setData, post, processing, errors } = useForm<LoginForm>({
+    const { data, setData, post, processing, errors, reset } = useForm<LoginForm>({
         email: '',
         password: '',
+        remember: false,
     });
 
     const [showPassword, setShowPassword] = useState(false);
+    const [formError, setFormError] = useState<string>('');
+
+    const validateForm = () => {
+        if (!data.email || !data.password) {
+            setFormError('All fields are required');
+            return false;
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(data.email)) {
+            setFormError('Please enter a valid email address');
+            return false;
+        }
+
+        return true;
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/login');
+        setFormError('');
+        
+        if (!validateForm()) return;
+
+        post('/login', {
+            onSuccess: () => {
+                reset('password');
+            },
+            onError: (errors) => {
+                if (errors.credentials) {
+                    setFormError(errors.credentials);
+                    setData('password', '');
+                } else if (errors.email) {
+                    setFormError(errors.email);
+                    setData('password', '');
+                } else if (errors.password) {
+                    setFormError(errors.password);
+                    setData('password', '');
+                } else {
+                    setFormError('An unexpected error occurred. Please try again.');
+                }
+            },
+        });
     };
 
     return (
@@ -25,6 +65,11 @@ export default function Login() {
             <div className="bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-md">
                 <h1 className="text-3xl font-bold text-center text-white mb-8">Welcome Back</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    {formError && (
+                        <div className="mb-4 p-4 rounded-md bg-red-50 border border-red-400 text-red-700">
+                            {formError}
+                        </div>
+                    )}
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
                             Email Address
@@ -69,6 +114,8 @@ export default function Login() {
                                 name="remember-me"
                                 type="checkbox"
                                 className="h-4 w-4 text-indigo-500 bg-gray-700 border-gray-600 rounded focus:ring-indigo-500"
+                                checked={data.remember}
+                                onChange={(e) => setData('remember', e.target.checked)}
                             />
                             <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
                                 Remember me
@@ -90,7 +137,7 @@ export default function Login() {
                 </form>
                 <div className="mt-6 text-center">
                     <Link
-                        href={route('register')}
+                        href="/register"
                         className="font-medium text-indigo-500 hover:text-indigo-400 transition"
                     >
                         Don't have an account? Sign up

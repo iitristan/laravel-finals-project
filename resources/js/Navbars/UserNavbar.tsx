@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Menu, X } from 'lucide-react';
-import route from 'ziggy-js';
 
 const UserNavbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,31 +22,31 @@ const UserNavbar = () => {
                     {/* Navbar Links */}
                     <div className="hidden md:flex items-center space-x-6">
                         <Link
-                            href={route('dashboard')}
+                            href="/dashboard"
                             className="text-white text-base hover:text-gray-200 transition-all"
                         >
                             User Dashboard
                         </Link>
                         <Link
-                            href={route('store')}
+                            href="/store"
                             className="text-white text-base hover:text-gray-200 transition-all"
                         >
                             Game Store
                         </Link>
                         <Link
-                            href={route('orders')}
+                            href="/orders"
                             className="text-white text-base hover:text-gray-200 transition-all"
                         >
                             My Orders
                         </Link>
                         <Link
-                            href={route('wishlist')}
+                            href="/wishlist"
                             className="text-white text-base hover:text-gray-200 transition-all"
                         >
                             Wishlist
                         </Link>
                         <Link
-                            href={route('cart.index')}
+                            href="/cart"
                             className="text-white text-base hover:text-gray-200 transition-all"
                         >
                             Cart
@@ -75,31 +74,31 @@ const UserNavbar = () => {
             <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'} bg-white/90 backdrop-blur-md p-4`}>
                 <div className="space-y-4">
                     <Link
-                        href={route('dashboard')}
+                        href="/dashboard"
                         className="block text-lg text-gray-700 hover:text-indigo-600"
                     >
                         User Dashboard
                     </Link>
                     <Link
-                        href={route('store')}
+                        href="/store"
                         className="block text-lg text-gray-700 hover:text-indigo-600"
                     >
                         Game Store
                     </Link>
                     <Link
-                        href={route('orders')}
+                        href="/orders"
                         className="block text-lg text-gray-700 hover:text-indigo-600"
                     >
                         My Orders
                     </Link>
                     <Link
-                        href={route('wishlist')}
+                        href="/wishlist"
                         className="block text-lg text-gray-700 hover:text-indigo-600"
                     >
                         Wishlist
                     </Link>
                     <Link
-                        href={route('cart.index')}
+                        href="/cart"
                         className="block text-lg text-gray-700 hover:text-indigo-600"
                     >
                         Cart

@@ -13,7 +13,7 @@ const WishlistContainer: React.FC<WishlistContainerProps> = ({ items }) => {
             <div className="text-center py-8">
                 <p className="text-gray-600 text-lg">Your wishlist is empty</p>
                 <Link 
-                    href={route('store')} 
+                    href="/store" 
                     className="mt-4 inline-block px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
                 >
                     Browse Games

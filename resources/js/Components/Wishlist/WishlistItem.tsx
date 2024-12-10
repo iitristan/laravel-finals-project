@@ -1,7 +1,6 @@
 import React from 'react';
 import { Game } from '@/types';
-import { Link } from '@inertiajs/react';
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import AddToWishlistButton from './AddToWishlistButton';
 
 interface WishlistItemProps {
@@ -10,7 +9,7 @@ interface WishlistItemProps {
 
 const WishlistItem: React.FC<WishlistItemProps> = ({ game }) => {
     const handleAddToCart = () => {
-        router.post(route('cart.add', game.id), {
+        router.post(`/cart/add/${game.id}`, {
             quantity: 1,
         });
     };
@@ -25,8 +24,8 @@ const WishlistItem: React.FC<WishlistItemProps> = ({ game }) => {
                 />
                 <div>
                     <Link 
-                        href={route('games.show', game.id)} 
-                        className="text-lg font-semibold  text-white hover:text-indigo-600 "
+                        href={`/games/${game.id}`}
+                        className="text-lg font-semibold text-white hover:text-indigo-600"
                     >
                         {game.name}
                     </Link>

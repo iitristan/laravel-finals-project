@@ -3,11 +3,6 @@
 import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Menu, X, LogIn, UserPlus } from 'lucide-react';
-import route from 'ziggy-js';
-
-declare global {
-    function route(name: string): string;
-}
 
 interface NavbarLinksProps {
     mobile?: boolean;
@@ -21,14 +16,14 @@ const NavbarLinks: React.FC<NavbarLinksProps> = ({ mobile = false }) => {
     return (
         <>
             <Link
-                href={route('login')}
+                href="/login"
                 className={`${baseClasses} ${mobile ? mobileClasses : desktopClasses} group flex items-center`}
             >
                 <LogIn className="w-5 h-5 mr-2 group-hover:animate-pulse" />
                 Sign In
             </Link>
             <Link
-                href={route('register')}
+                href="/register"
                 className={`${
                     mobile ? 'block w-full' : ''
                 } bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center`}

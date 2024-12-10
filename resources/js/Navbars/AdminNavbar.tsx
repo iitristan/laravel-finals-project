@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
-import route from 'ziggy-js';
 
 const AdminNavbar: React.FC = () => {
     return (
@@ -14,25 +13,25 @@ const AdminNavbar: React.FC = () => {
                         <div className="hidden md:block">
                             <div className="ml-10 flex items-baseline space-x-4">
                                 <Link
-                                    href={route('admin.dashboard')}
+                                    href="/admin/dashboard"
                                     className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
                                 >
                                     Dashboard
                                 </Link>
                                 <Link
-                                    href={route('admin.games')}
+                                    href="/admin/games"
                                     className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
                                 >
                                     Manage Games
                                 </Link>
                                 <Link
-                                    href={route('admin.orders.index')}
+                                    href="/admin/orders"
                                     className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
                                 >
                                     Manage Orders
                                 </Link>
                                 <Link
-                                    href={route('admin.users')}
+                                    href="/admin/users"
                                     className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
                                 >
                                     Manage Users
@@ -43,7 +42,7 @@ const AdminNavbar: React.FC = () => {
                     <div className="hidden md:block">
                         <div className="ml-4 flex items-center md:ml-6">
                             <Link
-                                href={route('admin.logout')}
+                                href="/admin/logout"
                                 method="post"
                                 as="button"
                                 className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
@@ -59,4 +58,3 @@ const AdminNavbar: React.FC = () => {
 }
 
 export default AdminNavbar;
-
