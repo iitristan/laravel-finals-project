@@ -52,130 +52,96 @@ export default function AddGameModal({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: 'spring', damping: 15, stiffness: 300 }}
-            className="relative w-full max-w-3xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-3xl bg-gray-900 rounded-lg shadow-xl"
           >
-            <div className="p-6 space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Add Game</h2>
-                <button
-                  onClick={onClose}
-                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
+            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+              <h2 className="text-2xl font-bold text-white">Add Game</h2>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
+            <div className="p-6 border-b border-gray-700">
               <div className="relative">
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   placeholder="Search for a game..."
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-200 ease-in-out"
+                  className="w-full bg-gray-800 text-white px-4 py-3 pl-10 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
               </div>
+            </div>
 
-              {loading && (
-                <div className="flex justify-center items-center py-8">
-                  <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+            <div className="max-h-[400px] overflow-y-auto p-6">
+              {loading ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {searchResults.map((game) => (
+                    <div
+                      key={game.id}
+                      className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 flex items-center gap-6 hover:bg-gray-800/70 transition-all duration-300"
+                    >
+                      <div className="flex items-center gap-4 flex-1">
+                        <img
+                          src={game.background_image}
+                          alt={game.name}
+                          className="w-16 h-16 object-cover rounded-lg shadow-lg"
+                          onError={(e) => {
+                            e.currentTarget.src = '/fallback-game-image.jpg'
+                          }}
+                        />
+                        <h3 className="text-lg font-semibold text-white">{game.name}</h3>
+                      </div>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={gameInputs[game.id]?.price || ''}
+                        onChange={(e) => onInputChange(game.id, 'price', e.target.value)}
+                        className="w-[120px] bg-gray-700/50 text-white px-3 py-2 rounded-md 
+                                 focus:ring-2 focus:ring-indigo-500 focus:outline-none
+                                 border border-gray-600 hover:border-gray-500 transition-colors"
+                        placeholder="Price ($)"
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        value={gameInputs[game.id]?.quantity || ''}
+                        onChange={(e) => onInputChange(game.id, 'quantity', e.target.value)}
+                        className="w-[120px] bg-gray-700/50 text-white px-3 py-2 rounded-md 
+                                 focus:ring-2 focus:ring-indigo-500 focus:outline-none
+                                 border border-gray-600 hover:border-gray-500 transition-colors"
+                        placeholder="Quantity"
+                      />
+                      <button
+                        onClick={() => onAddGame(game)}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white h-[38px] px-6 rounded-md 
+                                 transition-all duration-300 flex items-center gap-2
+                                 hover:shadow-lg active:scale-95"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
-
-              <ul className="space-y-4 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
-                <AnimatePresence>
-                  {searchResults.map((game) => (
-                    <motion.li
-                      key={game.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                      className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
-                    >
-                      <div className="flex items-center space-x-4 flex-1">
-                        <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-600">
-                          {game.background_image ? (
-                            <img
-                              src={game.background_image}
-                              alt={game.name}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = 'fallback-image-url.jpg';
-                              }}
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <ImageOff className="w-6 h-6 text-gray-400" />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex-1">
-                          <span className="font-medium text-gray-900 dark:text-white">{game.name}</span>
-                          <div className="flex space-x-4 mt-2">
-                            <div>
-                              <label htmlFor={`price-${game.id}`} className="block text-sm font-medium text-gray-700">
-                                Price per Game
-                              </label>
-                              <input
-                                type="number"
-                                step="0.01"
-                                name="price"
-                                id={`price-${game.id}`}
-                                value={gameInputs[game.id]?.price || ''}
-                                onChange={(e) => onInputChange(game.id, 'price', e.target.value)}
-                                className="mt-1 block w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                              />
-                            </div>
-
-                            <div>
-                              <label htmlFor={`quantity-${game.id}`} className="block text-sm font-medium text-gray-700">
-                                Stock Available
-                              </label>
-                              <input
-                                type="number"
-                                name="quantity"
-                                id={`quantity-${game.id}`}
-                                value={gameInputs[game.id]?.quantity || ''}
-                                onChange={(e) => onInputChange(game.id, 'quantity', e.target.value)}
-                                className="mt-1 block w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                              />
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700">
-                                Total Stock Value
-                              </label>
-                              <div className="mt-1 block w-28 rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-gray-700 sm:text-sm">
-                                ${(parseFloat(gameInputs[game.id]?.price || '0') * parseInt(gameInputs[game.id]?.quantity || '0')).toFixed(2)}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => {
-                            if (gameInputs[game.id]?.price && gameInputs[game.id]?.quantity) {
-                              onAddGame(game);
-                            }
-                          }}
-                          disabled={!gameInputs[game.id]?.price || !gameInputs[game.id]?.quantity}
-                          className={`flex-shrink-0 inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white 
-                            ${gameInputs[game.id]?.price && gameInputs[game.id]?.quantity
-                              ? 'bg-green-500 hover:bg-green-600'
-                              : 'bg-gray-400 cursor-not-allowed'
-                            } transition-colors duration-200`}
-                        >
-                          <Plus className="w-5 h-5 mr-1" />
-                          Add Game
-                        </button>
-                      </div>
-                    </motion.li>
-                  ))}
-                </AnimatePresence>
-              </ul>
             </div>
           </motion.div>
         </motion.div>
