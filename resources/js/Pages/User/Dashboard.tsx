@@ -15,7 +15,6 @@ interface Game {
 
 interface UserStats {
     totalGamesPlayed: number;
-    totalWishlistItems: number;
     totalHoursPlayed: number;
 }
 
@@ -25,10 +24,8 @@ const Dashboard = () => {
     const [error, setError] = useState<string | null>(null);
     const [userStats, setUserStats] = useState({
         totalGamesPlayed: 25,
-        totalWishlistItems: 10,
         totalHoursPlayed: 120,
     });
-    const [wishlistedGames, setWishlistedGames] = useState<number[]>([]);
 
     // Utility to shuffle an array
     const shuffleArray = (array) => {
@@ -58,15 +55,6 @@ const Dashboard = () => {
         fetchFeaturedGames();
     }, []);
 
-    // Add toggle wishlist function
-    const toggleWishlist = (gameId: number) => {
-        setWishlistedGames(prev => 
-            prev.includes(gameId)
-                ? prev.filter(id => id !== gameId)
-                : [...prev, gameId]
-        );
-    };
-
     // Extract GameCard component
     const GameCard = ({ game }: { game: Game }) => (
         <div className="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
@@ -89,22 +77,13 @@ const Dashboard = () => {
                         {game.rating ? game.rating.toFixed(1) : "N/A"}
                     </span>
                 </div>
-                <div className="mt-4 flex justify-between items-center">
+                <div className="mt-4">
                     <a
                         href={`/games/${game.slug}`}
                         className="text-indigo-400 hover:text-indigo-300 font-semibold"
                     >
                         View Details
                     </a>
-                    <button 
-                        onClick={() => toggleWishlist(game.id)}
-                        className="text-gray-400 hover:text-yellow-400 transition-colors"
-                    >
-                        <span className="sr-only">
-                            {wishlistedGames.includes(game.id) ? 'Remove from wishlist' : 'Add to wishlist'}
-                        </span>
-                        {wishlistedGames.includes(game.id) ? '★' : '☆'}
-                    </button>
                 </div>
             </div>
         </div>
@@ -171,16 +150,11 @@ const Dashboard = () => {
                         <h2 className="text-2xl font-semibold text-center mb-6 text-white">
                             Your Gaming Progress
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <StatsCard
                                 title="Total Games Played"
                                 value={userStats.totalGamesPlayed}
                                 bgColor="bg-indigo-600"
-                            />
-                            <StatsCard
-                                title="Wishlist Items"
-                                value={userStats.totalWishlistItems}
-                                bgColor="bg-purple-600"
                             />
                             <StatsCard
                                 title="Total Hours Played"
