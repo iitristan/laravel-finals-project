@@ -103,6 +103,7 @@ export default function AddToCartModal({ isOpen, onClose, onAddToCart, game }: P
                         </button>
                     </div>
                 </div>
+            </div>
         </div>
     );
 }
