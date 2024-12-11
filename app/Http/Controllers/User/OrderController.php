@@ -19,6 +19,8 @@ class OrderController extends Controller
         }
 
         try {
+            \DB::beginTransaction();
+
             $total = array_sum(array_map(function($item) {
                 return $item['quantity'] * $item['game']['price'];
             }, $cartItems));
@@ -30,15 +32,26 @@ class OrderController extends Controller
             ]);
 
             foreach ($cartItems as $item) {
+                $game = \App\Models\Game::find($item['game']['id']);
+                
+                if ($game->quantity < $item['quantity']) {
+                    \DB::rollBack();
+                    return redirect()->back()->with('error', "Insufficient stock for {$game->name}");
+                }
+
+                $game->decrement('quantity', $item['quantity']);
+
                 $order->games()->attach($item['game']['id'], [
                     'quantity' => $item['quantity'],
                     'price' => $item['game']['price']
                 ]);
             }
 
+            \DB::commit();
             session()->forget('cart');
             return redirect()->route('orders')->with('success', 'Order placed successfully');
         } catch (\Exception $e) {
+            \DB::rollBack();
             return redirect()->back()->with('error', 'Failed to create order');
         }
     }
