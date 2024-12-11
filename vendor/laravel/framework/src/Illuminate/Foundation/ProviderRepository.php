@@ -200,6 +200,7 @@ class ProviderRepository
      *
      * @param  string  $provider
      * @return \Illuminate\Support\ServiceProvider
+     * @return         Intervention\Image\ImageServiceProvider
      */
     public function createProvider($provider)
     {

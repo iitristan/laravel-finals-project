@@ -1,8 +1,10 @@
-import { useState } from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Menu, X } from 'lucide-react';
 
-const UserNavbar = () => {
+const UserNavbar: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
@@ -51,6 +53,14 @@ const UserNavbar = () => {
                         >
                             Cart
                         </Link>
+                        <Link
+                            href="/logout"
+                            method="post"
+                            as="button"
+                            className="text-white text-base px-3 py-2 rounded-md hover:bg-indigo-700 transition-all"
+                        >
+                            Logout
+                        </Link>
                     </div>
 
                     {/* Hamburger Menu for Mobile */}
@@ -59,7 +69,6 @@ const UserNavbar = () => {
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             className="text-white hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 p-2 rounded-md"
                         >
-                            <span className="sr-only">Open main menu</span>
                             {isMenuOpen ? (
                                 <X className="h-6 w-6" aria-hidden="true" />
                             ) : (
@@ -70,9 +79,9 @@ const UserNavbar = () => {
                 </div>
             </div>
 
-            {/* Mobile Menu */}
-            <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'} bg-white/90 backdrop-blur-md p-4`}>
-                <div className="space-y-4">
+            {/* Mobile Dropdown */}
+            {isMenuOpen && (
+                <div className="md:hidden bg-white/90 backdrop-blur-md p-4 space-y-4">
                     <Link
                         href="/dashboard"
                         className="block text-lg text-gray-700 hover:text-indigo-600"
@@ -103,8 +112,16 @@ const UserNavbar = () => {
                     >
                         Cart
                     </Link>
+                    <Link
+                        href="/logout"
+                        method="post"
+                        as="button"
+                        className="block text-lg text-gray-700 hover:bg-indigo-100 rounded-md p-2"
+                    >
+                        Logout
+                    </Link>
                 </div>
-            </div>
+            )}
         </nav>
     );
 };

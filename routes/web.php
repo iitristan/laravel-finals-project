@@ -7,20 +7,45 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\User\StoreController;
 use App\Http\Controllers\User\WishlistController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\User\OrderController as UserOrderController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
+// Landing Page
 Route::get('/', function () {
-    return Inertia::render('LandingPage');
+    return Inertia::render('LandingPage', [
+        'isAuthenticated' => Auth::check(),
+        'user' => Auth::user(),
+    ]);
 });
+
+// Logout Route (use controller method)
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+
+    Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+    Route::middleware('auth')->group(function () {
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+});   
+
+
+// Admin Reviews Management
+Route::middleware(['auth:admin'])->group(function () {
+    Route::get('/admin/reviews', [ReviewController::class, 'adminIndex']);
+    Route::put('/admin/reviews/{review}', [ReviewController::class, 'update']);
+    Route::delete('/admin/reviews/{review}', [ReviewController::class, 'destroy']);
+    Route::post('/admin/reviews/{review}/restore', [ReviewController::class, 'restore']);
+});
+
 
 // Admin Routes
 Route::prefix('admin')->group(function () {
@@ -74,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/checkout', [UserOrderController::class, 'store'])->name('checkout');
     Route::get('/orders', [UserOrderController::class, 'index'])->name('orders');
+    
 
     // Wishlist Routes
     Route::post('/wishlist/{game}/add', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
