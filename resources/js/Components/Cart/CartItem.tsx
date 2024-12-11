@@ -54,21 +54,28 @@ export default function CartItem({ game, quantity, onRemove, onUpdateQuantity }:
                 </div>
             </div>
 
-            {/* Quantity Input */}
-            <div className="w-32">
+            {/* Quantity Input and Availability */}
+            <div className="w-32 flex flex-col items-center">
                 <label htmlFor={`quantity-${game.id}`} className="sr-only">Quantity</label>
-                <input
-                    type="number"
-                    id={`quantity-${game.id}`}
-                    name={`quantity-${game.id}`}
-                    min="1"
-                    max={game.quantity}
-                    value={quantity}
-                    onChange={handleQuantityChange}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-black"
-                />
-                <p className="mt-1 text-sm text-gray-100">
-                    {game.quantity} available
+                <div className="relative">
+                    <input
+                        type="number"
+                        id={`quantity-${game.id}`}
+                        name={`quantity-${game.id}`}
+                        min="1"
+                        max={game.quantity}
+                        value={quantity}
+                        onChange={handleQuantityChange}
+                        className="w-24 px-4 py-2.5 bg-gray-800 border-2 border-gray-600 rounded-lg 
+                                 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                                 text-white text-center text-lg font-medium
+                                 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                                 [&::-webkit-inner-spin-button]:appearance-none
+                                 hover:border-gray-500 transition-colors"
+                    />
+                </div>
+                <p className="mt-2 text-sm text-gray-400 font-medium">
+                    {game.quantity} {game.quantity === 1 ? 'copy' : 'copies'} available
                 </p>
             </div>
 

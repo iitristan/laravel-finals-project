@@ -117,8 +117,11 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                                     <div className="mt-8 flex justify-between items-center">
                                         <Link
                                             href="/store"
-                                            className="text-indigo-400 hover:text-indigo-300"
+                                            className="text-indigo-400 hover:text-indigo-300 transition-colors duration-200 flex items-center gap-2"
                                         >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                            </svg>
                                             Continue Shopping
                                         </Link>
                                         <button
@@ -143,13 +146,16 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                                                     },  
                                                 });
                                             }}
-                                            className="bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 transition-colors"
+                                            className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors duration-200 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                             disabled={items.length === 0}
                                         >
                                             Proceed to Checkout
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                            </svg>
                                         </button>
                                     </div>
-                                    <p className="text-right text-lg font-bold mt-4">
+                                    <p className="text-right text-xl font-bold mt-6 text-indigo-300">
                                         Total: ${cartTotal.toFixed(2)}
                                     </p>
                                 </div>
