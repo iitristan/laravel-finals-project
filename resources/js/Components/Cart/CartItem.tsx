@@ -40,23 +40,23 @@ export default function CartItem({ game, quantity, onRemove, onUpdateQuantity }:
     }
 
     return (
-        <div className="flex items-center gap-6 py-5 border-b border-gray-200 last:border-0">
+        <div className="flex items-center gap-8 py-4 border-b border-gray-700/50 last:border-0 
+                      group hover:bg-gray-800/30 transition-colors rounded-lg px-6 min-h-[120px]">
             {/* Game Image and Info */}
-            <div className="flex items-center flex-1">
+            <div className="flex items-center flex-1 gap-6">
                 <img 
                     src={game.background_image} 
                     alt={game.name}
-                    className="w-20 h-20 object-cover rounded-lg"
+                    className="w-20 h-20 object-cover rounded-lg shadow-lg hover:scale-105 transition-transform"
                 />
-                <div className="ml-4">
-                    <h3 className="text-lg font-medium text-white">{game.name}</h3>
-                    <p className="text-sm text-gray-100">Price: ${game.price}</p>
+                <div>
+                    <h3 className="text-lg font-semibold text-white group-hover:text-indigo-400 transition-colors">{game.name}</h3>
+                    <p className="text-sm text-gray-400 mt-0.5">Price: ${game.price}</p>
                 </div>
             </div>
 
             {/* Quantity Input and Availability */}
-            <div className="w-32 flex flex-col items-center">
-                <label htmlFor={`quantity-${game.id}`} className="sr-only">Quantity</label>
+            <div className="w-36 flex flex-col items-center">
                 <div className="relative">
                     <input
                         type="number"
@@ -66,22 +66,22 @@ export default function CartItem({ game, quantity, onRemove, onUpdateQuantity }:
                         max={game.quantity}
                         value={quantity}
                         onChange={handleQuantityChange}
-                        className="w-24 px-4 py-2.5 bg-gray-800 border-2 border-gray-600 rounded-lg 
+                        className="w-24 px-3 py-2 bg-gray-800/80 border-2 border-gray-600 rounded-lg 
                                  focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
-                                 text-white text-center text-lg font-medium
+                                 text-white text-center text-base font-medium
                                  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
                                  [&::-webkit-inner-spin-button]:appearance-none
-                                 hover:border-gray-500 transition-colors"
+                                 hover:border-indigo-400 transition-all shadow-sm"
                     />
                 </div>
-                <p className="mt-2 text-sm text-gray-400 font-medium">
+                <p className="mt-1.5 text-xs text-gray-400 font-medium">
                     {game.quantity} {game.quantity === 1 ? 'copy' : 'copies'} available
                 </p>
             </div>
 
             {/* Subtotal */}
-            <div className="w-32 text-right">
-                <p className="text-lg font-medium text-gray-100">
+            <div className="w-28 text-right">
+                <p className="text-lg font-semibold text-white group-hover:text-indigo-400 transition-colors">
                     ${(game.price * quantity).toFixed(2)}
                 </p>
             </div>
@@ -89,10 +89,11 @@ export default function CartItem({ game, quantity, onRemove, onUpdateQuantity }:
             {/* Remove Button */}
             <button
                 onClick={handleRemove}
-                className="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50"
+                className="text-gray-400 hover:text-red-400 transition-colors p-2 rounded-full
+                         hover:bg-red-950/30 hover:scale-110 transform active:scale-95"
                 title="Remove from cart"
             >
-                <Trash2 className="w-5 h-5" />
+                <Trash2 className="w-4.5 h-4.5" />
             </button>
         </div>
     );
