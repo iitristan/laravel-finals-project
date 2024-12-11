@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { ManagedGame } from '@/types/game';
 import { router } from '@inertiajs/react';
+import { useToast } from '@/Contexts/ToastContext';
 
 interface Props {
     game: ManagedGame;
@@ -12,11 +13,17 @@ interface Props {
 
 export default function CartItem({ game, quantity, onRemove, onUpdateQuantity }: Props) {
     const [isRemoving, setIsRemoving] = useState(false);
+    const { showToast } = useToast();
 
     const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newQuantity = parseInt(e.target.value);
         if (!isNaN(newQuantity) && newQuantity > 0 && newQuantity <= game.quantity) {
             onUpdateQuantity(game.id, newQuantity);
+            showToast(`Updated ${game.name} quantity to ${newQuantity}`, 'success');
+        } else if (newQuantity > game.quantity) {
+            showToast(`Only ${game.quantity} copies available`, 'error');
+        } else if (newQuantity < 1) {
+            showToast('Quantity must be at least 1', 'error');
         }
     };
 
@@ -27,9 +34,12 @@ export default function CartItem({ game, quantity, onRemove, onUpdateQuantity }:
             
             router.post(`/cart/remove/${game.id}`, {}, {
                 preserveState: true,
+                onSuccess: () => {
+                    showToast(`${game.name} removed from cart`, 'success');
+                },
                 onError: () => {
                     setIsRemoving(false);
-                    alert('Failed to remove item. Please try again.');
+                    showToast('Failed to remove item. Please try again.', 'error');
                 }
             });
         }

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ShoppingCart, Star } from 'lucide-react';
 import AddToCartModal from './AddToCartModal';
 import { Link, router } from '@inertiajs/react';
+import { useToast } from '@/Contexts/ToastContext';
 
 interface Props {
     games?: ManagedGame[];
@@ -14,6 +15,7 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
     const [selectedGame, setSelectedGame] = useState<ManagedGame | null>(null);
     const [isCartModalOpen, setIsCartModalOpen] = useState(false);
     const [wishlistStates, setWishlistStates] = useState<{ [key: number]: boolean }>({});
+    const { showToast } = useToast();
     
     useEffect(() => {
         // Initialize wishlist states from games
@@ -45,12 +47,14 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
             onAddToCart(selectedGame.id, quantity);
             setIsCartModalOpen(false);
             setSelectedGame(null);
+            showToast(`${selectedGame.name} added to cart successfully!`, 'success');
         }
     };
 
     const handleToggleWishlist = (gameId: number) => {
         const isInWishlist = wishlistStates[gameId];
         const endpoint = isInWishlist ? `/wishlist/${gameId}/remove` : `/wishlist/${gameId}/add`;
+        const game = games.find(g => g.id === gameId);
         
         router.post(endpoint, {}, {
             preserveScroll: true,
@@ -60,6 +64,15 @@ export default function GameStore({ games = [], onAddToCart }: Props) {
                     ...prev,
                     [gameId]: !isInWishlist
                 }));
+                showToast(
+                    isInWishlist 
+                        ? `${game?.name} removed from wishlist` 
+                        : `${game?.name} added to wishlist`,
+                    'success'
+                );
+            },
+            onError: () => {
+                showToast('Failed to update wishlist', 'error');
             }
         });
     };

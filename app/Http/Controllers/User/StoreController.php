@@ -37,8 +37,23 @@ class StoreController extends Controller
     public function addToCart(Request $request, Game $game)
     {
         $request->validate([
-            'quantity' => 'required|integer|min:1|max:' . $game->quantity,
+            'quantity' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:' . $game->quantity,
+                function ($attribute, $value, $fail) use ($game) {
+                    if ($value > $game->quantity) {
+                        $fail('The requested quantity exceeds available stock.');
+                    }
+                },
+            ],
         ]);
+
+        // Check if game is active
+        if ($game->status !== 'active') {
+            return back()->with('error', 'This game is currently not available for purchase.');
+        }
 
         $cart = Cart::firstOrCreate([
             'user_id' => Auth::id(),
@@ -49,7 +64,7 @@ class StoreController extends Controller
         if ($cartItem) {
             $newQuantity = $cartItem->quantity + $request->quantity;
             if ($newQuantity > $game->quantity) {
-                return back()->with('error', 'Not enough stock available');
+                return back()->with('error', 'The total quantity would exceed available stock');
             }
             $cartItem->update(['quantity' => $newQuantity]);
         } else {
@@ -59,7 +74,7 @@ class StoreController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Game added to cart');
+        return back()->with('success', 'Game added to cart successfully');
     }
 
     public function viewCart()
@@ -89,29 +104,27 @@ class StoreController extends Controller
 
     public function removeFromCart(Game $game)
     {
-        $cart = Cart::where('user_id', Auth::id())->first();
+        $cart = Cart::where('user_id', Auth::id())->firstOrFail();
         
-        if ($cart) {
-            $cart->items()->where('game_id', $game->id)->delete();
-            
-            if (request()->wantsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Item removed from cart'
-                ]);
-            }
-            
-            return back()->with('success', 'Item removed from cart');
-        }
-
-        if (request()->wantsJson()) {
+        $cartItem = $cart->items()->where('game_id', $game->id)->first();
+        
+        if (!$cartItem) {
             return response()->json([
                 'success' => false,
                 'message' => 'Item not found in cart'
             ], 404);
         }
-
-        return back()->with('error', 'Item not found in cart');
+        
+        $cartItem->delete();
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Item removed from cart successfully'
+            ]);
+        }
+        
+        return back()->with('success', 'Item removed from cart');
     }
 
     public function updateCartQuantity(Request $request, Game $game)

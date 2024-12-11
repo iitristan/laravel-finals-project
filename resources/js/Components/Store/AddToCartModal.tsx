@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, MinusCircle, PlusCircle } from 'lucide-react';
 import { ManagedGame } from '@/types/game';
+import { useToast } from '@/Contexts/ToastContext';
 
 interface Props {
     isOpen: boolean;
@@ -11,26 +12,64 @@ interface Props {
 
 export default function AddToCartModal({ isOpen, onClose, onAddToCart, game }: Props) {
     const [quantity, setQuantity] = useState(1);
+    const { showToast } = useToast();
 
     useEffect(() => {
         if (isOpen) {
-            setQuantity(1); // Reset quantity when modal opens
+            setQuantity(1);
         }
     }, [isOpen]);
 
+    const validateQuantity = (value: number): boolean => {
+        if (!game) {
+            showToast('Game information is not available', 'error');
+            return false;
+        }
+
+        if (value < 1) {
+            showToast('Quantity must be at least 1', 'error');
+            return false;
+        }
+
+        if (value > game.quantity) {
+            showToast(`Only ${game.quantity} items available in stock`, 'error');
+            return false;
+        }
+
+        return true;
+    };
+
     const handleIncrement = () => {
-        if (game && quantity < game.quantity) {
-            setQuantity(prev => prev + 1);
+        const newQuantity = quantity + 1;
+        if (validateQuantity(newQuantity)) {
+            setQuantity(newQuantity);
         }
     };
 
     const handleDecrement = () => {
-        if (quantity > 1) {
-            setQuantity(prev => prev - 1);
+        const newQuantity = quantity - 1;
+        if (validateQuantity(newQuantity)) {
+            setQuantity(newQuantity);
+        }
+    };
+
+    const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseInt(e.target.value) || 0;
+        if (validateQuantity(value)) {
+            setQuantity(value);
         }
     };
 
     const handleConfirm = () => {
+        if (!game) {
+            showToast('Game information is not available', 'error');
+            return;
+        }
+
+        if (!validateQuantity(quantity)) {
+            return;
+        }
+
         onAddToCart(quantity);
         onClose();
     };
@@ -69,9 +108,14 @@ export default function AddToCartModal({ isOpen, onClose, onAddToCart, game }: P
                                 <MinusCircle className="w-6 h-6" />
                             </button>
                             
-                            <span className="text-lg font-medium w-12 text-center">
-                                {quantity}
-                            </span>
+                            <input
+                                type="number"
+                                value={quantity}
+                                onChange={handleQuantityChange}
+                                min={1}
+                                max={game?.quantity}
+                                className="w-20 text-center border rounded-md"
+                            />
                             
                             <button
                                 onClick={handleIncrement}

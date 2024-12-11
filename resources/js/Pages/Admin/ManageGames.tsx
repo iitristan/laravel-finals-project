@@ -7,7 +7,6 @@ import SearchAndFilter from '@/Components/Manage Games/SearchAndFilter';
 import ResultsSummary from '@/Components/Manage Games/ResultsSummary';
 import { rawgApi } from '@/services/rawgApi';
 import axios from 'axios';
-import route from 'ziggy-js';
 import { Game, ManagedGame } from '@/types/game';
 import { GameInput } from '@/types/gameInput';
 

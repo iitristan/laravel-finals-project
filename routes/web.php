@@ -77,7 +77,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Wishlist Routes
     Route::post('/wishlist/{game}/add', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
-    Route::delete('/wishlist/{game}/remove', [WishlistController::class, 'removeFromWishlist'])->name('wishlist.remove');
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 });
 

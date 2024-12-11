@@ -18,41 +18,32 @@ const AddToWishlistButton: React.FC<AddToWishlistButtonProps> = ({
     const [isLoading, setIsLoading] = useState(false);
 
     const handleToggleWishlist = () => {
-        setIsLoading(true);
-        
         if (inWishlist) {
-            router.delete(`/wishlist/${gameId}/remove`, {
-                preserveScroll: true,
-                preserveState: true,
-                onSuccess: () => {
-                    setInWishlist(false);
-                    setIsLoading(false);
-                },
-                onError: () => setIsLoading(false),
-            });
-        } else {
-            router.post(`/wishlist/${gameId}/add`, {}, {
-                preserveScroll: true,
-                preserveState: true,
-                onSuccess: () => {
-                    setInWishlist(true);
-                    setIsLoading(false);
-                },
-                onError: () => setIsLoading(false),
-            });
+            return; // Do nothing if already in wishlist
         }
+
+        setIsLoading(true);
+        router.post(`/wishlist/${gameId}/add`, {}, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                setInWishlist(true);
+                setIsLoading(false);
+            },
+            onError: () => setIsLoading(false),
+        });
     };
 
     return (
         <button
             onClick={handleToggleWishlist}
-            disabled={isLoading}
+            disabled={isLoading || inWishlist}
             className={`flex items-center space-x-2 ${
                 inWishlist 
-                    ? 'text-yellow-500 hover:text-yellow-600' 
+                    ? 'text-yellow-500' 
                     : 'text-gray-400 hover:text-gray-500'
             } transition-colors ${className}`}
-            title={inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+            title={inWishlist ? 'In Wishlist' : 'Add to Wishlist'}
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"

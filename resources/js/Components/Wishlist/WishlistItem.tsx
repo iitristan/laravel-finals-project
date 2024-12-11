@@ -2,15 +2,26 @@ import React from 'react';
 import { Game } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import AddToWishlistButton from './AddToWishlistButton';
+import { useToast } from '@/Contexts/ToastContext';
 
 interface WishlistItemProps {
     game: Game;
 }
 
 const WishlistItem: React.FC<WishlistItemProps> = ({ game }) => {
+    const { showToast } = useToast();
+
     const handleAddToCart = () => {
         router.post(`/cart/add/${game.id}`, {
             quantity: 1,
+        }, {
+            preserveState: true,
+            onSuccess: () => {
+                showToast(`${game.name} added to cart`, 'success');
+            },
+            onError: () => {
+                showToast('Failed to add to cart', 'error');
+            }
         });
     };
 
