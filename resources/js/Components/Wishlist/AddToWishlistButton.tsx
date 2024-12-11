@@ -1,21 +1,27 @@
 import React, { useState } from 'react';
 import { router } from '@inertiajs/react';
+import { useToast } from '@/Contexts/ToastContext';
 
 interface AddToWishlistButtonProps {
     gameId: number;
+    gameName: string;
     isInWishlist?: boolean;
     className?: string;
     showText?: boolean;
+    onWishlistChange?: (isInWishlist: boolean) => void;
 }
 
 const AddToWishlistButton: React.FC<AddToWishlistButtonProps> = ({ 
     gameId, 
+    gameName,
     isInWishlist = false,
     className = '',
-    showText = false
+    showText = false,
+    onWishlistChange
 }) => {
     const [inWishlist, setInWishlist] = useState(isInWishlist);
     const [isLoading, setIsLoading] = useState(false);
+    const { showToast } = useToast();
 
     const handleToggleWishlist = () => {
         if (inWishlist) {
@@ -23,14 +29,25 @@ const AddToWishlistButton: React.FC<AddToWishlistButtonProps> = ({
         }
 
         setIsLoading(true);
-        router.post(`/wishlist/${gameId}/add`, {}, {
+        const endpoint = inWishlist ? `/wishlist/${gameId}/remove` : `/wishlist/${gameId}/add`;
+        router.post(endpoint, {}, {
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
-                setInWishlist(true);
+                setInWishlist(!inWishlist);
+                onWishlistChange?.(!inWishlist);
+                showToast(
+                    inWishlist 
+                        ? `${gameName} removed from wishlist` 
+                        : `${gameName} added to wishlist`,
+                    'success'
+                );
                 setIsLoading(false);
             },
-            onError: () => setIsLoading(false),
+            onError: () => {
+                showToast('Failed to update wishlist', 'error');
+                setIsLoading(false);
+            }
         });
     };
 

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Edit2, Trash2 } from 'lucide-react';
 import EditGameModal from './EditGameModal';
+import { useToast } from '@/Contexts/ToastContext';
 
 interface Props {
     game: ManagedGame;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export default function GameTableRow({ game, onUpdate, onDelete }: Props) {
+    const { showToast } = useToast();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const handleDelete = () => {
@@ -21,6 +23,10 @@ export default function GameTableRow({ game, onUpdate, onDelete }: Props) {
                 preserveScroll: true,
                 onSuccess: () => {
                     onDelete(game.id);
+                    showToast(`${game.name} deleted successfully`, 'success');
+                },
+                onError: () => {
+                    showToast('Failed to delete game', 'error');
                 }
             });
         }

@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Save, Loader2 } from 'lucide-react'
 import { router } from '@inertiajs/react'
+import { useToast } from '@/Contexts/ToastContext'
 
 interface Props {
   isOpen: boolean
@@ -23,10 +24,23 @@ export default function EditGameModal({ isOpen, onClose, game, onUpdate }: Props
     status: game.status,
     _method: 'PUT'
   })
+  const { showToast } = useToast()
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        name: game.name,
+        price: game.price,
+        quantity: game.quantity,
+        status: game.status,
+        _method: 'PUT'
+      })
+    }
+  }, [isOpen, game])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,9 +60,12 @@ export default function EditGameModal({ isOpen, onClose, game, onUpdate }: Props
         }
         onUpdate(updatedGame)
         onClose()
+        showToast(`${formData.name} updated successfully`, 'success')
       },
-      onError: () => {
+      onError: (errors) => {
         setLoading(false)
+        const errorMessages = Object.values(errors).flat()
+        showToast(errorMessages[0], 'error')
       }
     })
   }
