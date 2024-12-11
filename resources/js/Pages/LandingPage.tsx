@@ -135,11 +135,16 @@ const LandingPage = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {recentGames.map((game) => (
                                 <div key={game.id} className="group bg-gray-900/50 rounded-lg overflow-hidden hover:bg-gray-800/50 transition-all duration-300 flex flex-col">
-                                    <div className="relative aspect-[16/9]">
+                                    <div className="relative w-full h-48 bg-gray-700">
                                         <img
-                                            src={game.background_image}
+                                            src={game.background_image || '/images/placeholder-game.jpg'}
                                             alt={game.name}
-                                            className="w-full h-full object-cover"
+                                            className="absolute inset-0 w-full h-full object-cover"
+                                            loading="lazy"
+                                            onError={(e) => {
+                                                const target = e.target as HTMLImageElement;
+                                                target.src = '/images/placeholder-game.jpg';
+                                            }}
                                         />
                                     </div>
                                     <div className="p-4 space-y-2 flex-1 flex flex-col">
