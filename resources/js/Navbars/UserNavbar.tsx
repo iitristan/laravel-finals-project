@@ -1,11 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import { Menu, X } from 'lucide-react';
 
 const UserNavbar: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { post } = useForm();
+
+    const handleLogout = () => {
+        post('/logout');
+    };
 
     return (
         <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 fixed top-0 left-0 w-full z-50 shadow-md backdrop-blur-md">
@@ -23,7 +28,7 @@ const UserNavbar: React.FC = () => {
 
                     {/* Navbar Links */}
                     <div className="hidden md:flex items-center space-x-6">
-                    <Link
+                        <Link
                             href="/"
                             className="text-white text-base hover:text-gray-200 transition-all"
                         >
@@ -59,14 +64,13 @@ const UserNavbar: React.FC = () => {
                         >
                             Cart
                         </Link>
-                        <Link
-                            href="/logout"
-                            method="post"
-                            as="button"
+                        <button
+                            onClick={handleLogout}
+                            type="button"
                             className="text-white text-base px-3 py-2 rounded-md hover:bg-indigo-700 transition-all"
                         >
                             Logout
-                        </Link>
+                        </button>
                     </div>
 
                     {/* Hamburger Menu for Mobile */}
@@ -118,14 +122,13 @@ const UserNavbar: React.FC = () => {
                     >
                         Cart
                     </Link>
-                    <Link
-                        href="/logout"
-                        method="post"
-                        as="button"
-                        className="block text-lg text-gray-700 hover:bg-indigo-100 rounded-md p-2"
+                    <button
+                        onClick={handleLogout}
+                        type="button"
+                        className="block w-full text-left text-lg text-gray-700 hover:bg-indigo-100 rounded-md p-2"
                     >
                         Logout
-                    </Link>
+                    </button>
                 </div>
             )}
         </nav>
