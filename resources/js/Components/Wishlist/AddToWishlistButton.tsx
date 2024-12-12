@@ -24,10 +24,6 @@ const AddToWishlistButton: React.FC<AddToWishlistButtonProps> = ({
     const { showToast } = useToast();
 
     const handleToggleWishlist = () => {
-        if (inWishlist) {
-            return; // Do nothing if already in wishlist
-        }
-
         setIsLoading(true);
         const endpoint = inWishlist ? `/wishlist/${gameId}/remove` : `/wishlist/${gameId}/add`;
         router.post(endpoint, {}, {
@@ -54,13 +50,13 @@ const AddToWishlistButton: React.FC<AddToWishlistButtonProps> = ({
     return (
         <button
             onClick={handleToggleWishlist}
-            disabled={isLoading || inWishlist}
+            disabled={isLoading}
             className={`flex items-center space-x-2 ${
                 inWishlist 
                     ? 'text-yellow-500' 
                     : 'text-gray-400 hover:text-gray-500'
             } transition-colors ${className}`}
-            title={inWishlist ? 'In Wishlist' : 'Add to Wishlist'}
+            title={inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"

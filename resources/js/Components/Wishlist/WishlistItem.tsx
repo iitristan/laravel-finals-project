@@ -56,6 +56,7 @@ const WishlistItem: React.FC<WishlistItemProps> = ({ game }) => {
                 </button>
                 <AddToWishlistButton 
                     gameId={game.id} 
+                    gameName={game.name}
                     isInWishlist={true}
                     showText={false}
                 />

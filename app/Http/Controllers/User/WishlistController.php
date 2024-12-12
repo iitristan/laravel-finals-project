@@ -36,4 +36,20 @@ class WishlistController extends Controller
             return redirect()->back()->with('error', 'Failed to add game to wishlist');
         }
     }
+
+    public function removeFromWishlist(Game $game)
+    {
+        $wishlist = Wishlist::where('user_id', Auth::id())->first();
+        
+        if (!$wishlist) {
+            return redirect()->back()->with('error', 'Wishlist not found');
+        }
+
+        try {
+            $wishlist->games()->detach($game->id);
+            return redirect()->back()->with('success', 'Game removed from wishlist');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to remove game from wishlist');
+        }
+    }
 }

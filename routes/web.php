@@ -23,7 +23,13 @@ Route::get('/', function () {
 
 // Logout Route (use controller method)
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+<<<<<<< Updated upstream
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+=======
+
+// Authentication Routes
+Route::get('/login', [AuthController::class, 'showLogin'])->name('custom.login');
+>>>>>>> Stashed changes
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -72,7 +78,7 @@ Route::prefix('admin')->group(function () {
         // Orders Management
         Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
         Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
-        Route::put('/admin/orders/{id}/status', [OrderController::class, 'updateStatus'])
+        Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus'])
             ->name('admin.orders.update-status');
         
             Route::get('/users', [UserController::class, 'fetchUsers'])->name('users.index');
@@ -109,10 +115,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Wishlist Routes
     Route::post('/wishlist/{game}/add', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
+    Route::post('/wishlist/{game}/remove', [WishlistController::class, 'removeFromWishlist'])->name('wishlist.remove');
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 });
 
-Route::middleware(['auth:admin'])->group(function () {
-    Route::put('/admin/orders/{id}/status', [OrderController::class, 'updateStatus'])
-        ->name('admin.orders.update-status');
-});
