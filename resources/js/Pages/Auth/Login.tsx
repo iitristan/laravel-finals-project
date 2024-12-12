@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm, Link, Head } from '@inertiajs/react';
+import { useForm, Link, Head, router } from '@inertiajs/react';
 
 interface LoginForm {
     email: string;
@@ -22,7 +22,7 @@ export default function Login() {
             setFormError('All fields are required');
             return false;
         }
-        
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(data.email)) {
             setFormError('Please enter a valid email address');
@@ -35,12 +35,13 @@ export default function Login() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setFormError('');
-        
+
         if (!validateForm()) return;
 
         post('/login', {
             onSuccess: () => {
                 reset('password');
+                router.visit('/'); // Redirect to the home page
             },
             onError: (errors) => {
                 if (errors.credentials) {
@@ -93,7 +94,7 @@ export default function Login() {
                                 type={showPassword ? 'text' : 'password'}
                                 id="password"
                                 className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-                                placeholder="••••••••"
+                                placeholder=""
                                 value={data.password}
                                 onChange={(e) => setData('password', e.target.value)}
                             />

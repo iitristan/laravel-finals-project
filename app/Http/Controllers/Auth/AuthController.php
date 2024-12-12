@@ -22,30 +22,30 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+{
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        // Check if email exists first
-        $user = User::where('email', $credentials['email'])->first();
-        
-        if (!$user) {
-            return back()->withErrors([
-                'credentials' => 'No user account found with these credentials.',
-            ]);
-        }
+    // Check if email exists
+    $user = User::where('email', $credentials['email'])->first();
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
-        }
-
+    if (!$user) {
         return back()->withErrors([
-            'credentials' => 'The provided credentials do not match our records.',
+            'email' => 'No account found with this email.',
         ]);
     }
+
+    if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        $request->session()->regenerate();
+        return redirect()->intended('/');
+    }
+
+    return back()->withErrors([
+        'password' => 'Incorrect password.',
+    ]);
+}
 
     public function register(Request $request)
     {

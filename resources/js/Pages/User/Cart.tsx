@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import UserNavbar from '@/Navbars/UserNavbar';
-import { Head, Link, router } from '@inertiajs/react';
-import CartItem from '@/Components/Cart/CartItem';
-import { ManagedGame } from '@/types/game';
-import { useToast } from '@/Contexts/ToastContext';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import UserNavbar from "@/Navbars/UserNavbar";
+import { Head, Link, router } from "@inertiajs/react";
+import CartItem from "@/Components/Cart/CartItem";
+import { ManagedGame } from "@/types/game";
+import { useToast } from "@/Contexts/ToastContext";
+import axios from "axios";
 
 interface CartItemType {
     game: ManagedGame;
@@ -32,24 +32,26 @@ const Cart = ({ cartItems = [], total = 0, flash }: Props) => {
 
     useEffect(() => {
         if (flash?.success) {
-            showToast(flash.success, 'success');
+            showToast(flash.success, "success");
         }
         if (flash?.error) {
-            showToast(flash.error, 'error');
+            showToast(flash.error, "error");
         }
     }, [flash]);
 
     const handleRemoveFromCart = (gameId: number) => {
-        const updatedItems = items.filter(item => item.game.id !== gameId);
+        const updatedItems = items.filter((item) => item.game.id !== gameId);
         setItems(updatedItems);
 
-        const newTotal = updatedItems.reduce((sum, item) =>
-            sum + item.game.price * item.quantity, 0);
+        const newTotal = updatedItems.reduce(
+            (sum, item) => sum + item.game.price * item.quantity,
+            0
+        );
         setCartTotal(newTotal);
     };
 
     const handleUpdateQuantity = (gameId: number, quantity: number) => {
-        const updatedItems = items.map(item => {
+        const updatedItems = items.map((item) => {
             if (item.game.id === gameId) {
                 return { ...item, quantity };
             }
@@ -57,44 +59,65 @@ const Cart = ({ cartItems = [], total = 0, flash }: Props) => {
         });
         setItems(updatedItems);
 
-        const newTotal = updatedItems.reduce((sum, item) =>
-            sum + item.game.price * item.quantity, 0);
+        const newTotal = updatedItems.reduce(
+            (sum, item) => sum + item.game.price * item.quantity,
+            0
+        );
         setCartTotal(newTotal);
 
-        router.post(`/cart/update/${gameId}`, { quantity }, {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.post(
+            `/cart/update/${gameId}`,
+            { quantity },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            }
+        );
     };
 
     const handleRemoveAll = () => {
-        if (confirm('Are you sure you want to remove all items from your cart?')) {
-            router.post('/cart/remove-all', {}, {
-                preserveState: true,
-                onSuccess: () => {
-                    setItems([]);
-                    setCartTotal(0);
-                },
-            });
+        if (
+            confirm("Are you sure you want to remove all items from your cart?")
+        ) {
+            router.post(
+                "/cart/remove-all",
+                {},
+                {
+                    preserveState: true,
+                    onSuccess: () => {
+                        setItems([]);
+                        setCartTotal(0);
+                    },
+                }
+            );
         }
     };
 
     const handleCheckout = () => {
-        axios.post('/checkout', {
-            cartItems: JSON.stringify(items),
-        }, {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }
-        }).then((response) => {
-            showToast(response.data.message, 'success');
-            router.visit('/orders');
-        }).catch((error) => {
-            console.error('Checkout failed:', error);
-            const errorMessage = error.response?.data?.error || 'Checkout failed. Please try again.';
-            showToast(errorMessage, 'error');
-        });
+        axios
+            .post(
+                "/checkout",
+                {
+                    cartItems: JSON.stringify(items),
+                },
+                {
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                    },
+                }
+            )
+            .then((response) => {
+                showToast(response.data.message, "success");
+                router.visit("/orders");
+            })
+            .catch((error) => {
+                console.error("Checkout failed:", error);
+                const errorMessage =
+                    error.response?.data?.error ||
+                    "Checkout failed. Please try again.";
+                showToast(errorMessage, "error");
+            });
     };
 
     return (
@@ -113,7 +136,9 @@ const Cart = ({ cartItems = [], total = 0, flash }: Props) => {
                     <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-bold">Your Cart</h2>
+                                <h2 className="text-2xl font-bold">
+                                    Your Cart
+                                </h2>
                                 {items.length > 0 && (
                                     <button
                                         onClick={handleRemoveAll}
@@ -126,7 +151,9 @@ const Cart = ({ cartItems = [], total = 0, flash }: Props) => {
 
                             {items.length === 0 ? (
                                 <div className="text-center py-12">
-                                    <p className="text-gray-400 text-lg">Your cart is empty</p>
+                                    <p className="text-gray-400 text-lg">
+                                        Your cart is empty
+                                    </p>
                                     <Link
                                         href="/store"
                                         className="mt-4 inline-block bg-indigo-600 text-white py-3 px-6 rounded-full hover:bg-indigo-700 transition-all"
@@ -142,7 +169,9 @@ const Cart = ({ cartItems = [], total = 0, flash }: Props) => {
                                             game={item.game}
                                             quantity={item.quantity}
                                             onRemove={handleRemoveFromCart}
-                                            onUpdateQuantity={handleUpdateQuantity}
+                                            onUpdateQuantity={
+                                                handleUpdateQuantity
+                                            }
                                         />
                                     ))}
 
@@ -151,8 +180,18 @@ const Cart = ({ cartItems = [], total = 0, flash }: Props) => {
                                             href="/store"
                                             className="text-indigo-400 hover:text-indigo-300 transition-colors duration-200 flex items-center gap-2"
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                                                />
                                             </svg>
                                             Continue Shopping
                                         </Link>
@@ -162,8 +201,18 @@ const Cart = ({ cartItems = [], total = 0, flash }: Props) => {
                                             disabled={items.length === 0}
                                         >
                                             Proceed to Checkout
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                                />
                                             </svg>
                                         </button>
                                     </div>

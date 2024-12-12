@@ -111,6 +111,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
     const saveEditedReview = async () => {
         if (editingReviewId === null) return;
     
+        // Clear previous errors
+        setData("errors", null);
+    
         try {
             const csrfToken = document
                 .querySelector('meta[name="csrf-token"]')
@@ -127,8 +130,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
     
             if (response.ok) {
                 const result = await response.json();
-                alert("Review updated successfully!");
-                setEditingReviewId(null);
+                // Update local state with the updated review
                 setReviews((prev) =>
                     prev.map((review) =>
                         review.id === editingReviewId
@@ -136,15 +138,25 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
                             : review
                     )
                 );
+                setEditingReviewId(null);
+                setEditingContent({ review: "", rating: 0 });
+                alert("Review updated successfully!");
             } else {
+                // Handle non-successful HTTP responses
                 const errorData = await response.json();
-                alert(`Error: ${errorData.message || "Failed to update review."}`);
+                if (errorData.errors) {
+                    // Display specific validation errors
+                    setData("errors", errorData.errors);
+                } else {
+                    alert(`Error: ${errorData.message || "Failed to update review."}`);
+                }
             }
         } catch (error) {
             console.error("Error updating review:", error);
-            alert("An error occurred while updating the review.");
+            alert("An unexpected error occurred while updating the review.");
         }
     };
+    
     
     
     

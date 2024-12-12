@@ -50,6 +50,9 @@ const Dashboard = ({
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [reviews, setReviews] = useState<Review[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
+    const [loadingUsers, setLoadingUsers] = useState(true);
+    const [loadingReviews, setLoadingReviews] = useState(true);
     const {
         data,
         setData,
@@ -78,23 +81,11 @@ const Dashboard = ({
         }
     };
 
-
-    // Soft delete review
     const softDeleteReview = async (id: number) => {
-        try {
-            await destroy(`/admin/reviews/${id}`, {
-                onSuccess: () => fetchReviews(),
-            });
-        } catch (error) {
-            console.error("Error soft deleting review:", error);
-        }
-    };
-
-    const permanentlyDeleteReview = async (id: number) => {
-        if (!confirm("Are you sure you want to permanently delete this review?")) return;
+        if (!confirm("Are you sure you want to soft delete this review?")) return;
     
         try {
-            const response = await fetch(`/admin/reviews/${id}?force=true`, {
+            const response = await fetch(`/admin/reviews/${id}`, {
                 method: "DELETE",
                 headers: {
                     "X-CSRF-TOKEN": document
@@ -102,20 +93,59 @@ const Dashboard = ({
                         ?.getAttribute("content") || "",
                 },
             });
-            if (response.ok) { // This will handle 204 No Content as well
+    
+            if (response.status === 204) {
+                // Update the `deleted_at` field of the review in the state
+                setReviews((prevReviews) =>
+                    prevReviews.map((review) =>
+                        review.id === id ? { ...review, deleted_at: new Date().toISOString() } : review
+                    )
+                );
+                alert("Review soft deleted successfully.");
+            } else {
+                alert("Failed to soft delete review.");
+            }
+        } catch (error) {
+            console.error("Error soft deleting review:", error);
+            alert("An error occurred while soft deleting the review.");
+        }
+    };
+    
+    
+
+    const permanentlyDeleteReview = async (id: number) => {
+        if (
+            !confirm("Are you sure you want to permanently delete this review?")
+        )
+            return;
+
+        try {
+            const response = await fetch(`/admin/reviews/${id}?force=true`, {
+                method: "DELETE",
+                headers: {
+                    "X-CSRF-TOKEN":
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute("content") || "",
+                },
+            });
+            if (response.ok) {
+                // This will handle 204 No Content as well
                 fetchReviews();
                 alert("Review permanently deleted.");
             } else {
                 const errorData = await response.json();
-                alert(`Failed to permanently delete review: ${errorData.message || "Unknown error."}`);
+                alert(
+                    `Failed to permanently delete review: ${
+                        errorData.message || "Unknown error."
+                    }`
+                );
             }
         } catch (error) {
             console.error("Error permanently deleting review:", error);
             alert("An error occurred while permanently deleting the review.");
         }
     };
-    
-    
 
     // Restore soft-deleted review
     const restoreReview = async (id: number) => {
@@ -123,9 +153,10 @@ const Dashboard = ({
             const response = await fetch(`/admin/reviews/${id}/restore`, {
                 method: "POST",
                 headers: {
-                    "X-CSRF-TOKEN": document
-                        .querySelector('meta[name="csrf-token"]')
-                        ?.getAttribute("content") || "",
+                    "X-CSRF-TOKEN":
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute("content") || "",
                 },
             });
             if (response.ok) {
@@ -139,7 +170,6 @@ const Dashboard = ({
             alert("An error occurred while restoring the review.");
         }
     };
-    
 
     useEffect(() => {
         fetchReviews();
@@ -159,6 +189,71 @@ const Dashboard = ({
         };
 
         fetchGames();
+    }, []);
+
+    useEffect(() => {
+        fetchReviews();
+    }, []);
+
+    // Fetch users
+    const fetchUsers = async () => {
+        try {
+            const csrfToken = document
+                .querySelector('meta[name="csrf-token"]')
+                ?.getAttribute("content");
+    
+            const response = await fetch("/users", {
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken || "",
+                },
+                credentials: "include",
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setUsers(data.users);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        } finally {
+            setLoadingUsers(false);
+        }
+    };
+        
+    
+
+    // Delete user
+    const deleteUser = async (userId: number) => {
+        if (!confirm("Are you sure you want to delete this user?")) return;
+
+        try {
+            const response = await fetch(`/users/${userId}`, {
+                method: "DELETE",
+                headers: {
+                    "X-CSRF-TOKEN":
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute("content") || "",
+                },
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert("User deleted successfully!");
+                setUsers((prevUsers) =>
+                    prevUsers.filter((user) => user.id !== userId)
+                );
+            } else {
+                alert(data.message || "Failed to delete user.");
+            }
+        } catch (error) {
+            console.error("Error deleting user:", error);
+            alert("An error occurred while deleting the user.");
+        }
+    };
+
+    useEffect(() => {
+        fetchUsers();
     }, []);
 
     useEffect(() => {
@@ -308,150 +403,133 @@ const Dashboard = ({
                             ))}
                         </div>
                     </div>
-                    <div className="bg-gray-900 text-white py-12">
-                        <div className="max-w-7xl mx-auto px-6 sm:px-8">
-                            <h1 className="text-3xl font-semibold mb-8">
-                                Manage User Reviews
-                            </h1>
-                            {loading ? (
-                                <div className="text-center">
-                                    Loading reviews...
-                                </div>
-                            ) : (
-                                <div className="overflow-x-auto">
-                                    <table className="table-auto w-full text-left text-sm bg-gray-800 rounded-lg">
-                                        <thead>
-                                            <tr className="text-white bg-gray-700">
-                                                <th className="px-4 py-2">
-                                                    ID
-                                                </th>
-                                                <th className="px-4 py-2">
-                                                    User ID
-                                                </th>
-                                                <th className="px-4 py-2">
-                                                    Review
-                                                </th>
-                                                <th className="px-4 py-2">
-                                                    Rating
-                                                </th>
-                                                <th className="px-4 py-2">
-                                                    Image
-                                                </th>
-                                                <th className="px-4 py-2">
-                                                    Actions
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {reviews.map((review) => (
-                                                <tr
-                                                    key={review.id}
-                                                    className={
-                                                        review.deleted_at
-                                                            ? "bg-gray-600"
-                                                            : "bg-gray-800"
+ <div className="bg-gray-900 text-white py-12">
+    <div className="max-w-7xl mx-auto px-6 sm:px-8">
+        <h1 className="text-3xl font-semibold mb-8">Manage User Reviews</h1>
+        {loading ? (
+            <div className="text-center">Loading reviews...</div>
+        ) : (
+            <div className="overflow-x-auto">
+                <table className="table-auto w-full text-left text-sm bg-gray-800 rounded-lg">
+                    <thead>
+                        <tr className="text-white bg-gray-700">
+                            <th className="px-4 py-2">ID</th>
+                            <th className="px-4 py-2">User Email</th>
+                            <th className="px-4 py-2">Review</th>
+                            <th className="px-4 py-2">Rating</th>
+                            <th className="px-4 py-2">Image</th>
+                            <th className="px-4 py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {reviews
+                            .sort((a, b) => a.id - b.id) // Sort by ID
+                            .map((review) => {
+                                const userEmail =
+                                    users.find((user) => user.id === review.user_id)?.email ||
+                                    "Unknown User";
+
+                                return (
+                                    <tr
+                                        key={review.id}
+                                        className={
+                                            review.deleted_at
+                                                ? "bg-gray-600"
+                                                : "bg-gray-800"
+                                        }
+                                    >
+                                        <td className="px-4 py-2">{review.id}</td>
+                                        <td className="px-4 py-2">{userEmail}</td>
+                                        <td className="px-4 py-2">{review.review}</td>
+                                        <td className="px-4 py-2">{review.rating}</td>
+                                        <td className="px-4 py-2">
+                                            {review.image && (
+                                                <img
+                                                    src={`/storage/${review.image}`}
+                                                    alt="Review"
+                                                    className="w-20 h-20 object-cover rounded"
+                                                />
+                                            )}
+                                        </td>
+                                        <td className="px-4 py-2 space-y-2">
+                                            {review.deleted_at ? (
+                                                <button
+                                                    className="bg-green-500 px-3 py-1 rounded text-white mr-2"
+                                                    onClick={() =>
+                                                        restoreReview(review.id)
                                                     }
                                                 >
-                                                    <td className="px-4 py-2">
-                                                        {review.id}
-                                                    </td>
-                                                    <td className="px-4 py-2">
-                                                        {review.user_id}
-                                                    </td>
-                                                    <td className="px-4 py-2">
-                                                        {review.review}
-                                                    </td>
-                                                    <td className="px-4 py-2">
-                                                        {review.rating}
-                                                    </td>
-                                                    <td className="px-4 py-2">
-                                                        {review.image && (
-                                                            <img
-                                                                src={`/storage/${review.image}`}
-                                                                alt="Review"
-                                                                className="w-20 h-20 object-cover"
-                                                            />
-                                                        )}
-                                                    </td>
-                                                    <td className="px-4 py-2">
-                                                        {review.deleted_at ? (
-                                                            <button
-                                                                className="bg-green-500 px-3 py-1 rounded text-white mr-2"
-                                                                onClick={() =>
-                                                                    restoreReview(
-                                                                        review.id
-                                                                    )
-                                                                }
-                                                            >
-                                                                Restore
-                                                            </button>
-                                                        ) : (
-                                                            <button
-                                                                className="bg-red-500 px-3 py-1 rounded text-white mr-2"
-                                                                onClick={() =>
-                                                                    softDeleteReview(
-                                                                        review.id
-                                                                    )
-                                                                }
-                                                            >
-                                                                Soft Delete
-                                                            </button>
-                                                        )}
-                                                        <button
-                                                            className="bg-red-700 px-3 py-1 rounded text-white"
-                                                            onClick={() =>
-                                                                permanentlyDeleteReview(
-                                                                    review.id
-                                                                )
-                                                            }
-                                                        >
-                                                            Delete Permanently
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            )}
-                            {data.id && (
-                                <form
-                                    onSubmit={submitReview}
-                                    className="mt-8 bg-gray-800 p-6 rounded-lg"
+                                                    Restore
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    className="bg-red-500 px-3 py-1 rounded text-white mr-2"
+                                                    onClick={() =>
+                                                        softDeleteReview(review.id)
+                                                    }
+                                                >
+                                                    Soft Delete
+                                                </button>
+                                            )}
+                                            <button
+                                                className="bg-red-700 px-3 py-1 rounded text-white"
+                                                onClick={() =>
+                                                    permanentlyDeleteReview(review.id)
+                                                }
+                                            >
+                                                Delete Permanently
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                    </tbody>
+                </table>
+            </div>
+        )}
+
+        {/* Manage Users Section */}
+        <h1 className="text-3xl font-semibold mb-6 mt-12">Manage Users</h1>
+        {loadingUsers ? (
+            <div>Loading users...</div>
+        ) : (
+            <table className="table-auto w-full bg-gray-800 rounded-lg text-center">
+                <thead className="bg-gray-700 text-white">
+                    <tr>
+                        <th className="px-4 py-2">Name</th>
+                        <th className="px-4 py-2">Email</th>
+                        <th className="px-4 py-2">Joined Date</th>
+                        <th className="px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users.map((user) => (
+                        <tr
+                            key={user.id}
+                            className="bg-gray-800 text-white"
+                        >
+                            <td className="px-4 py-2">{user.name}</td>
+                            <td className="px-4 py-2">{user.email}</td>
+                            <td className="px-4 py-2">
+                                {new Date(user.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="px-4 py-2">
+                                <button
+                                    onClick={() => deleteUser(user.id)}
+                                    className="bg-red-500 px-3 py-1 rounded text-white"
                                 >
-                                    <h2 className="text-xl font-semibold mb-4">
-                                        Edit Review
-                                    </h2>
-                                    <textarea
-                                        value={data.review}
-                                        onChange={(e) =>
-                                            setData("review", e.target.value)
-                                        }
-                                        className="w-full p-4 rounded bg-gray-700 text-white mb-4"
-                                    />
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        max="5"
-                                        value={data.rating}
-                                        onChange={(e) =>
-                                            setData(
-                                                "rating",
-                                                Number(e.target.value)
-                                            )
-                                        }
-                                        className="w-full p-4 rounded bg-gray-700 text-white mb-4"
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="bg-indigo-600 px-6 py-3 rounded text-white"
-                                    >
-                                        Save Changes
-                                    </button>
-                                </form>
-                            )}
-                        </div>
-                    </div>
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        )}
+    </div>
+</div>
+
+
                 </div>
             </div>
         </>

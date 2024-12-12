@@ -7,70 +7,66 @@ interface LoginForm {
 }
 
 const Login: React.FC = () => {
-    const { data, setData, post, processing, errors, reset } = useForm<LoginForm>({
+    const { data, setData, post, processing, reset } = useForm<LoginForm>({
         email: '',
         password: '',
     });
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [formError, setFormError] = useState<string>('');
-
-    const validateForm = () => {
-        if (!data.email || !data.password) {
-            setFormError('All fields are required');
-            return false;
-        }
-        
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(data.email)) {
-            setFormError('Please enter a valid email address');
-            return false;
-        }
-
-        return true;
-    };
+    const [formErrors, setFormErrors] = useState<{ email?: string; password?: string; credentials?: string }>({});
+    const [popupMessage, setPopupMessage] = useState<string | null>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setFormError('');
-        
-        if (!validateForm()) return;
+        setFormErrors({});
+        setPopupMessage(null); // Clear previous popup message
 
         post('/admin/login', {
             onSuccess: () => {
-                reset('password');
+                reset('password'); // Clear the password field
             },
             onError: (errors) => {
+                setFormErrors(errors); // Set form-specific errors
                 if (errors.credentials) {
-                    setFormError(errors.credentials);
-                    setData('password', '');
+                    setPopupMessage(errors.credentials);
                 } else if (errors.email) {
-                    setFormError(errors.email);
-                    setData('password', '');
+                    setPopupMessage(errors.email);
                 } else if (errors.password) {
-                    setFormError(errors.password);
-                    setData('password', '');
+                    setPopupMessage(errors.password);
                 } else {
-                    setFormError('Invalid administrator credentials. Please contact system administrator.');
+                    setPopupMessage('An unexpected error occurred. Please try again.');
                 }
             },
         });
     };
 
+    const closePopup = () => {
+        setPopupMessage(null);
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
             <Head title="Admin Login" />
-            <div className="max-w-md w-full space-y-8 p-8 bg-gray-800 rounded-lg shadow-lg">
-                {formError && (
-                    <div className="p-4 rounded-md bg-red-50 border border-red-400 text-red-700">
-                        {formError}
+            {popupMessage && (
+                <div
+                    className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50"
+                    onClick={closePopup}
+                >
+                    <div
+                        className="bg-gray-800 text-white p-6 rounded-lg shadow-lg text-center max-w-md"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <p>{popupMessage}</p>
+                        <button
+                            className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                            onClick={closePopup}
+                        >
+                            Close
+                        </button>
                     </div>
-                )}
-                <div>
-                    <h2 className="text-center text-3xl font-extrabold">
-                        Admin Login
-                    </h2>
                 </div>
+            )}
+            <div className="max-w-md w-full space-y-8 p-8 bg-gray-800 rounded-lg shadow-lg">
+                <h2 className="text-center text-3xl font-extrabold">Admin Login</h2>
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="rounded-md shadow-sm space-y-4">
                         <div>
@@ -89,8 +85,8 @@ const Login: React.FC = () => {
                                     setData('email', e.target.value)
                                 }
                             />
-                            {errors.email && (
-                                <div className="text-red-500 text-sm mt-1">{errors.email}</div>
+                            {formErrors.email && (
+                                <div className="text-red-500 text-sm mt-1">{formErrors.email}</div>
                             )}
                         </div>
                         <div>
@@ -109,8 +105,8 @@ const Login: React.FC = () => {
                                     setData('password', e.target.value)
                                 }
                             />
-                            {errors.password && (
-                                <div className="text-red-500 text-sm mt-1">{errors.password}</div>
+                            {formErrors.password && (
+                                <div className="text-red-500 text-sm mt-1">{formErrors.password}</div>
                             )}
                         </div>
                     </div>

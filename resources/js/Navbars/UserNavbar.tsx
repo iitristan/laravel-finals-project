@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import React, { useState } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 import { Menu, X } from 'lucide-react';
+
 
 const UserNavbar: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -34,12 +35,7 @@ const UserNavbar: React.FC = () => {
                         >
                             Home
                         </Link>
-                        <Link
-                            href="/dashboard"
-                            className="text-white text-base hover:text-gray-200 transition-all"
-                        >
-                            Dashboard
-                        </Link>
+
                         <Link
                             href="/store"
                             className="text-white text-base hover:text-gray-200 transition-all"
@@ -93,12 +89,6 @@ const UserNavbar: React.FC = () => {
             {isMenuOpen && (
                 <div className="md:hidden bg-white/90 backdrop-blur-md p-4 space-y-4">
                     <Link
-                        href="/dashboard"
-                        className="block text-lg text-gray-700 hover:text-indigo-600"
-                    >
-                        User Dashboard
-                    </Link>
-                    <Link
                         href="/store"
                         className="block text-lg text-gray-700 hover:text-indigo-600"
                     >
@@ -123,12 +113,12 @@ const UserNavbar: React.FC = () => {
                         Cart
                     </Link>
                     <button
-                        onClick={handleLogout}
-                        type="button"
-                        className="block w-full text-left text-lg text-gray-700 hover:bg-indigo-100 rounded-md p-2"
-                    >
+                            onClick={handleLogout}
+                            type="button"
+                            className="text-white text-base px-3 py-2 rounded-md hover:bg-indigo-700 transition-all"
+                        >
                         Logout
-                    </button>
+                        </button>
                 </div>
             )}
         </nav>

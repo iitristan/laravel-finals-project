@@ -24,13 +24,17 @@ Route::get('/', function () {
 // Logout Route (use controller method)
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+
+
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/get-user-id', [ReviewController::class, 'getUserIdByEmail']);
+Route::get('/admin/users', [AdminController::class, 'fetchUsers'])->middleware('auth:admin');
 
 
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
@@ -48,6 +52,8 @@ Route::post('/get-user-id', [ReviewController::class, 'getUserIdByEmail']);
         Route::post('/admin/reviews/{id}/restore', [ReviewController::class, 'restore']); // Updated to accept `id`
     });
     
+    Route::get('/users', [UserController::class, 'fetchUsers']); // Without middleware for testing
+    Route::delete('/users/{id}', [UserController::class, 'deleteUser']); // Without middleware for testing
 
 
 // Admin Routes
@@ -73,10 +79,12 @@ Route::prefix('admin')->group(function () {
         Route::put('/admin/orders/{id}/status', [OrderController::class, 'updateStatus'])
             ->name('admin.orders.update-status');
         
-        // Users Management
-        Route::get('users', [UserController::class, 'index'])->name('admin.users');
-        Route::get('users/{user}', [UserController::class, 'show'])->name('admin.users.show');
-        Route::put('users/{user}/status', [UserController::class, 'updateStatus'])->name('admin.users.update-status');
+            Route::get('/users', [UserController::class, 'fetchUsers'])->name('users.index');
+
+            Route::get('/users/{id}', [UserController::class, 'show'])->name('admin.users.show');
+            Route::put('/users/{id}/status', [UserController::class, 'updateStatus'])->name('admin.users.update-status');
+            Route::get('/fetch-users', [UserController::class, 'fetchUsers'])->name('admin.users.fetch');
+            Route::delete('/users/{id}', [UserController::class, 'deleteUser'])->name('admin.users.delete');
     });
 });
 

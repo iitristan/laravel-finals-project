@@ -52,20 +52,22 @@ class ReviewController extends Controller
         return response()->json($reviews);
     }
 
-    public function update(Request $request, $id)
-    {
-        $review = Review::findOrFail($id);
-    
-        $request->validate([
-            'review' => 'required|string|max:500',
-            'rating' => 'required|integer|min:1|max:5',
-        ]);
-    
-        $review->update($request->only('review', 'rating'));
-    
-        return back(); // Reload the current page
-    }
-    
+public function update(Request $request, $id)
+{
+    $validated = $request->validate([
+        'review' => 'required|string|max:500',
+        'rating' => 'required|integer|min:1|max:5',
+    ]);
+
+    $review = Review::findOrFail($id);
+    $review->update($validated);
+
+    return response()->json([
+        'success' => true,
+        'review' => $review,
+    ], 200);
+}
+
     
 
     public function destroy(Request $request, $id)

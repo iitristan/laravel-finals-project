@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Trash2 } from 'lucide-react';
-import { ManagedGame } from '@/types/game';
-import { router } from '@inertiajs/react';
-import { useToast } from '@/Contexts/ToastContext';
+import React, { useState } from "react";
+import { Trash2 } from "lucide-react";
+import { ManagedGame } from "@/types/game";
+import { router } from "@inertiajs/react";
+import { useToast } from "@/Contexts/ToastContext";
 
 interface Props {
     game: ManagedGame;
@@ -11,37 +11,53 @@ interface Props {
     onUpdateQuantity: (gameId: number, quantity: number) => void;
 }
 
-export default function CartItem({ game, quantity, onRemove, onUpdateQuantity }: Props) {
+function CartItem({ game, quantity, onRemove, onUpdateQuantity }: Props) {
     const [isRemoving, setIsRemoving] = useState(false);
     const { showToast } = useToast();
 
     const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newQuantity = parseInt(e.target.value);
-        if (!isNaN(newQuantity) && newQuantity > 0 && newQuantity <= game.quantity) {
+        if (
+            !isNaN(newQuantity) &&
+            newQuantity > 0 &&
+            newQuantity <= game.quantity
+        ) {
             onUpdateQuantity(game.id, newQuantity);
-            showToast(`Updated ${game.name} quantity to ${newQuantity}`, 'success');
+            showToast(
+                `Updated ${game.name} quantity to ${newQuantity}`,
+                "success"
+            );
         } else if (newQuantity > game.quantity) {
-            showToast(`Only ${game.quantity} copies available`, 'error');
+            showToast(`Only ${game.quantity} copies available`, "error");
         } else if (newQuantity < 1) {
-            showToast('Quantity must be at least 1', 'error');
+            showToast("Quantity must be at least 1", "error");
         }
     };
 
     const handleRemove = () => {
-        if (confirm('Are you sure you want to remove this item from your cart?')) {
+        if (
+            confirm("Are you sure you want to remove this item from your cart?")
+        ) {
             setIsRemoving(true);
             onRemove(game.id); // Immediately update UI
-            
-            router.post(`/cart/remove/${game.id}`, {}, {
-                preserveState: true,
-                onSuccess: () => {
-                    showToast(`${game.name} removed from cart`, 'success');
-                },
-                onError: () => {
-                    setIsRemoving(false);
-                    showToast('Failed to remove item. Please try again.', 'error');
+
+            router.post(
+                `/cart/remove/${game.id}`,
+                {},
+                {
+                    preserveState: true,
+                    onSuccess: () => {
+                        showToast(`${game.name} removed from cart`, "success");
+                    },
+                    onError: () => {
+                        setIsRemoving(false);
+                        showToast(
+                            "Failed to remove item. Please try again.",
+                            "error"
+                        );
+                    },
                 }
-            });
+            );
         }
     };
 
@@ -50,18 +66,24 @@ export default function CartItem({ game, quantity, onRemove, onUpdateQuantity }:
     }
 
     return (
-        <div className="flex items-center gap-8 py-4 border-b border-gray-700/50 last:border-0 
-                      group hover:bg-gray-800/30 transition-colors rounded-lg px-6 min-h-[120px]">
+        <div
+            className="flex items-center gap-8 py-4 border-b border-gray-700/50 last:border-0 
+                      group hover:bg-gray-800/30 transition-colors rounded-lg px-6 min-h-[120px]"
+        >
             {/* Game Image and Info */}
             <div className="flex items-center flex-1 gap-6">
-                <img 
-                    src={game.background_image} 
+                <img
+                    src={game.background_image}
                     alt={game.name}
                     className="w-20 h-20 object-cover rounded-lg shadow-lg hover:scale-105 transition-transform"
                 />
                 <div>
-                    <h3 className="text-lg font-semibold text-white group-hover:text-indigo-400 transition-colors">{game.name}</h3>
-                    <p className="text-sm text-gray-400 mt-0.5">Price: ${game.price}</p>
+                    <h3 className="text-lg font-semibold text-white group-hover:text-indigo-400 transition-colors">
+                        {game.name}
+                    </h3>
+                    <p className="text-sm text-gray-400 mt-0.5">
+                        Price: ${game.price}
+                    </p>
                 </div>
             </div>
 
@@ -85,7 +107,8 @@ export default function CartItem({ game, quantity, onRemove, onUpdateQuantity }:
                     />
                 </div>
                 <p className="mt-1.5 text-xs text-gray-400 font-medium">
-                    {game.quantity} {game.quantity === 1 ? 'copy' : 'copies'} available
+                    {game.quantity} {game.quantity === 1 ? "copy" : "copies"}{" "}
+                    available
                 </p>
             </div>
 
@@ -108,3 +131,5 @@ export default function CartItem({ game, quantity, onRemove, onUpdateQuantity }:
         </div>
     );
 }
+
+export default CartItem;

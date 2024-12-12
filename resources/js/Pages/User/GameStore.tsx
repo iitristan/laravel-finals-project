@@ -13,7 +13,7 @@ const GameStorePage = ({ games }: Props) => {
         router.post(`/cart/add/${gameId}`, {
             quantity,
         }, {
-            preserveScroll: true,
+            preserveScroll: true,   
         });
     };
 
