@@ -11,6 +11,11 @@ import { Game, ManagedGame } from '@/types/game';
 import { GameInput } from '@/types/gameInput';
 import { useToast } from '@/Contexts/ToastContext';
 
+// Configure Axios to include CSRF token
+axios.defaults.headers.common['X-CSRF-TOKEN'] = document
+    .querySelector('meta[name="csrf-token"]')
+    ?.getAttribute('content');
+
 interface Props {
     games: ManagedGame[];
 }
@@ -86,6 +91,12 @@ export default function ManageGames({ games: initialGames }: Props) {
                 status: 'active',
                 rating: game.rating,
                 genres: game.genres,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
             });
 
             if (response.status === 201) {
