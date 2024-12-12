@@ -30,7 +30,7 @@ class GameController extends Controller
         ]);
 
         try {
-            // Check if game already exists by name or slug
+            // unique name checker sa mga laro!!!!!!!!!!!
             $existingGame = Game::where('name', $validated['name'])
                 ->orWhere('slug', $validated['slug'])
                 ->first();
