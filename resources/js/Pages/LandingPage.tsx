@@ -39,7 +39,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [reviews, setReviews] = useState([]);
     const [editingReviewId, setEditingReviewId] = useState<number | null>(null);
-    const [editingContent, setEditingContent] = useState<{ review: string; rating: number }>({
+    const [editingContent, setEditingContent] = useState<{
+        review: string;
+        rating: number;
+    }>({
         review: "",
         rating: 0,
     });
@@ -70,7 +73,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
 
         fetchGames();
     }, []);
-    
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -104,21 +106,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
         const reviewToEdit = reviews.find((review: any) => review.id === id);
         if (reviewToEdit) {
             setEditingReviewId(id);
-            setEditingContent({ review: reviewToEdit.review, rating: reviewToEdit.rating });
+            setEditingContent({
+                review: reviewToEdit.review,
+                rating: reviewToEdit.rating,
+            });
         }
     };
 
     const saveEditedReview = async () => {
         if (editingReviewId === null) return;
-    
+
         // Clear previous errors
         setData("errors", null);
-    
+
         try {
             const csrfToken = document
                 .querySelector('meta[name="csrf-token"]')
                 ?.getAttribute("content");
-    
+
             const response = await fetch(`/reviews/${editingReviewId}`, {
                 method: "PUT",
                 headers: {
@@ -127,7 +132,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
                 },
                 body: JSON.stringify(editingContent),
             });
-    
+
             if (response.ok) {
                 const result = await response.json();
                 // Update local state with the updated review
@@ -148,7 +153,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
                     // Display specific validation errors
                     setData("errors", errorData.errors);
                 } else {
-                    alert(`Error: ${errorData.message || "Failed to update review."}`);
+                    alert(
+                        `Error: ${
+                            errorData.message || "Failed to update review."
+                        }`
+                    );
                 }
             }
         } catch (error) {
@@ -156,48 +165,42 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
             alert("An unexpected error occurred while updating the review.");
         }
     };
-    
-    
-    
-    
-    
-    
+
     const handleDeleteReview = async (id: number) => {
         if (!confirm("Are you sure you want to delete this review?")) return;
-    
+
         try {
             const csrfToken = document
                 .querySelector('meta[name="csrf-token"]')
                 ?.getAttribute("content");
-    
+
             const response = await fetch(`/reviews/${id}`, {
                 method: "DELETE",
                 headers: {
                     "X-CSRF-TOKEN": csrfToken || "",
                 },
             });
-    
+
             if (response.ok) {
                 alert("Review deleted successfully!");
                 setReviews((prev) => prev.filter((review) => review.id !== id));
             } else {
                 const errorData = await response.json();
-                alert(`Error: ${errorData.error || "Failed to delete review."}`);
+                alert(
+                    `Error: ${errorData.error || "Failed to delete review."}`
+                );
             }
         } catch (error) {
             console.error("Error deleting review:", error);
             alert("An error occurred while deleting the review.");
         }
     };
-    
-    
-    
 
     const cancelEditing = () => {
         setEditingReviewId(null);
         setEditingContent({ review: "", rating: 0 });
     };
-    
+
     useEffect(() => {
         const searchGames = async () => {
             setLoading(true);
@@ -309,16 +312,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
                             {recentGames.map((game) => (
                                 <div
                                     key={game.id}
-                                    className="group bg-gray-900/50 rounded-lg overflow-hidden hover:bg-gray-800/50 transition-all duration-300 flex flex-col"
+                                    className="bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105"
                                 >
-                                    <div className="relative w-full h-48 bg-gray-700">
+                                    <div className="relative">
                                         <img
                                             src={
                                                 game.background_image ||
                                                 "/images/placeholder-game.jpg"
                                             }
                                             alt={game.name}
-                                            className="absolute inset-0 w-full h-full object-cover"
+                                            className="w-full h-48 object-cover"
                                             loading="lazy"
                                             onError={(e) => {
                                                 const target =
@@ -327,38 +330,43 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
                                                     "/images/placeholder-game.jpg";
                                             }}
                                         />
+                                        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                            <p className="text-white text-center px-2 text-sm">
+                                                {game.genres
+                                                    .map((g) => g.name)
+                                                    .join(", ")}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="p-4 space-y-2 flex-1 flex flex-col">
-                                        <h3 className="font-bold text-xl text-white">
+                                    <div className="p-4">
+                                        <h3 className="font-bold text-lg text-white">
                                             {game.name}
                                         </h3>
-                                        <div className="flex items-center text-sm text-gray-400">
-                                            <span className="flex items-center">
-                                                <span className="text-yellow-400 mr-1">
-                                                    ★
+                                        <div className="mt-2 text-sm text-gray-400">
+                                            <p>
+                                                Rating:{" "}
+                                                <span className="text-yellow-400">
+                                                    {game.rating}
                                                 </span>
-                                                {game.rating}
-                                            </span>
-                                            <span className="mx-2">•</span>
-                                            <span>
+                                            </p>
+                                            <p>
+                                                Released:{" "}
                                                 {new Date(
                                                     game.released
-                                                ).getFullYear()}
-                                            </span>
+                                                ).toLocaleDateString()}
+                                            </p>
+                                            <p>Platforms:</p>
+                                            <ul className="list-disc list-inside">
+                                                {game.platforms.map((p) => (
+                                                    <li
+                                                        key={p.platform.id}
+                                                        className="text-gray-300"
+                                                    >
+                                                        {p.platform.name}
+                                                    </li>
+                                                ))}
+                                            </ul>
                                         </div>
-                                        <div className="text-sm text-gray-400">
-                                            {game.genres
-                                                .slice(0, 2)
-                                                .map((g) => g.name)
-                                                .join(", ")}
-                                        </div>
-                                        <div className="flex-1"></div>
-                                        <a
-                                            href={`/games/${game.slug}`}
-                                            className="block w-full text-center py-2 px-4 bg-indigo-600 hover:bg-indigo-700 rounded text-white font-medium transition-colors duration-300"
-                                        >
-                                            More Info
-                                        </a>
                                     </div>
                                 </div>
                             ))}
@@ -428,14 +436,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
                             </button>
                         </form>
                     </div>
-                )}  
- {/* Display Reviews */}
- <div className="max-w-7xl mx-auto py-8 px-6 sm:px-8 bg-gray-800 rounded-lg mt-8">
-                    <h2 className="text-3xl font-semibold mb-6">What Our Users Say</h2>
+                )}
+                {/* Display Reviews */}
+                <div className="max-w-7xl mx-auto py-8 px-6 sm:px-8 bg-gray-800 rounded-lg mt-8">
+                    <h2 className="text-3xl font-semibold mb-6">
+                        What Our Users Say
+                    </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                         {reviews
                             .filter((review: any) =>
-                                isAuthenticated ? review.user?.email === user?.email : true
+                                isAuthenticated
+                                    ? review.user?.email === user?.email
+                                    : true
                             )
                             .map((review: any) => (
                                 <div
@@ -460,7 +472,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
                                                 onChange={(e) =>
                                                     setEditingContent({
                                                         ...editingContent,
-                                                        rating: Number(e.target.value),
+                                                        rating: Number(
+                                                            e.target.value
+                                                        ),
                                                     })
                                                 }
                                                 min="1"
@@ -484,27 +498,41 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
                                         </>
                                     ) : (
                                         <>
-                                            <p className="text-gray-300 italic">"{review.review}"</p>
+                                            <p className="text-gray-300 italic">
+                                                "{review.review}"
+                                            </p>
                                             <div className="mt-4 flex items-center">
                                                 <div className="font-semibold text-white">
-                                                    {review.user?.email || "Anonymous User"}
+                                                    {review.user?.email ||
+                                                        "Anonymous User"}
                                                 </div>
                                                 <div className="ml-auto text-yellow-400">
                                                     {"★".repeat(review.rating) +
-                                                        "☆".repeat(5 - review.rating)}
+                                                        "☆".repeat(
+                                                            5 - review.rating
+                                                        )}
                                                 </div>
                                             </div>
                                             {isAuthenticated &&
-                                                review.user?.email === user?.email && (
+                                                review.user?.email ===
+                                                    user?.email && (
                                                     <div className="mt-4 flex space-x-4">
                                                         <button
-                                                            onClick={() => handleEditReview(review.id)}
+                                                            onClick={() =>
+                                                                handleEditReview(
+                                                                    review.id
+                                                                )
+                                                            }
                                                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                                                         >
                                                             Edit
                                                         </button>
                                                         <button
-                                                            onClick={() => handleDeleteReview(review.id)}
+                                                            onClick={() =>
+                                                                handleDeleteReview(
+                                                                    review.id
+                                                                )
+                                                            }
                                                             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                                                         >
                                                             Delete
@@ -517,7 +545,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
                             ))}
                     </div>
                 </div>
-
             </div>
         </>
     );
