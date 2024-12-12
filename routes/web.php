@@ -70,9 +70,8 @@ Route::prefix('admin')->group(function () {
         // Orders Management
         Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
         Route::get('/orders/{id}', [OrderController::class, 'show'])->name('admin.orders.show');
-        Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus'])
-            ->name('admin.orders.update-status')
-            ->middleware(['auth', 'verified']);
+        Route::put('/admin/orders/{id}/status', [OrderController::class, 'updateStatus'])
+            ->name('admin.orders.update-status');
         
         // Users Management
         Route::get('users', [UserController::class, 'index'])->name('admin.users');
@@ -110,7 +109,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth:admin'])->group(function () {
-    Route::post('/admin/orders/{id}/status', [OrderController::class, 'updateStatus'])
-        ->name('admin.orders.update-status')
-        ->middleware(['auth', 'verified']);
+    Route::put('/admin/orders/{id}/status', [OrderController::class, 'updateStatus'])
+        ->name('admin.orders.update-status');
 });

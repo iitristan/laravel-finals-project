@@ -1,6 +1,11 @@
 import AdminNavbar from '@/Navbars/AdminNavbar';
 import { Head, useForm } from '@inertiajs/react';
 import axios from 'axios';
+import { useToast } from '@/Contexts/ToastContext';
+
+axios.defaults.headers.common['X-CSRF-TOKEN'] = document
+    .querySelector('meta[name="csrf-token"]')
+    ?.getAttribute('content');
 
 interface Game {
     id: number;
@@ -29,18 +34,23 @@ interface Props {
 
 export default function ManageOrders({ orders = [] }: Props) {
     const { post, processing } = useForm();
+    const { showToast } = useToast();
 
     const updateOrderStatus = (orderId: number, newStatus: string) => {
-        axios.post(`/admin/orders/${orderId}/status`, {
+        axios.put(`/admin/orders/${orderId}/status`, {
             status: newStatus,
         }, {
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
             }
-        }).then(() => {
+        }).then((response) => {
+            showToast(response.data.message, 'success');
             window.location.reload();
         }).catch((error) => {
             console.error('Failed to update:', error);
+            const errorMessage = error.response?.data?.error || 'Failed to update order status';
+            showToast(errorMessage, 'error');
         });
     };
 

@@ -43,15 +43,42 @@ class OrderController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $status = $request->input('status');
-        if (!$status) {
-            throw new \Exception('Status is required');
+        try {
+            $status = $request->input('status');
+            if (!$status) {
+                return response()->json([
+                    'error' => 'Status is required'
+                ], 422);
+            }
+
+            $order = Order::findOrFail($id);
+            $order->status = $status;
+            $order->save();
+
+            // Create status-specific messages
+            $message = match ($status) {
+                'to be shipped' => "Order #{$order->id} has been marked for shipping",
+                'shipped' => "Order #{$order->id} has been shipped successfully",
+                default => "Order #{$order->id} status updated to {$status}"
+            };
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => $message
+                ]);
+            }
+
+            return redirect()->back()->with('success', $message);
+
+        } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'error' => 'Failed to update order status',
+                    'details' => $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'Failed to update order status');
         }
-
-        $order = Order::findOrFail($id);
-        $order->status = $status;
-        $order->saveOrFail();
-
-        return redirect()->back();
     }
 }
