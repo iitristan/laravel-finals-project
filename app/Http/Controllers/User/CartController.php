@@ -13,11 +13,13 @@ class CartController extends Controller
         $cartItems = session()->get('cart', []);
         $total = $this->calculateTotal($cartItems);
 
-        \Log::info('Cart contents:', ['items' => $cartItems]); // Debug log
-
         return Inertia::render('User/Cart', [
-            'cartItems' => $cartItems,
-            'total' => $total
+            'cartItems' => array_values($cartItems),
+            'total' => $total,
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error')
+            ]
         ]);
     }
 
@@ -29,10 +31,14 @@ class CartController extends Controller
             $cart[$gameId]['quantity'] = $request->quantity;
             session()->put('cart', $cart);
             
-            \Log::info('Cart updated:', ['cart' => $cart]); // Debug log
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Cart updated successfully'
+                ]);
+            }
         }
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Cart updated successfully');
     }
 
     public function add(Request $request, $gameId)
@@ -50,16 +56,27 @@ class CartController extends Controller
         }
 
         session()->put('cart', $cart);
-        \Log::info('Item added to cart:', ['cart' => $cart]); // Debug log
 
-        return redirect()->back()->with('success', 'Game added to cart');
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => "{$game->name} added to cart"
+            ]);
+        }
+
+        return redirect()->back()->with('success', "{$game->name} added to cart");
     }
 
     public function removeAll()
     {
         session()->forget('cart');
-        \Log::info('Cart cleared'); // Debug log
-        return redirect()->back();
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Cart cleared successfully'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Cart cleared successfully');
     }
 
     private function calculateTotal($cartItems)

@@ -3,6 +3,8 @@ import UserNavbar from '@/Navbars/UserNavbar';
 import { Head, Link, router } from '@inertiajs/react';
 import CartItem from '@/Components/Cart/CartItem';
 import { ManagedGame } from '@/types/game';
+import { useToast } from '@/Contexts/ToastContext';
+import axios from 'axios';
 
 interface CartItemType {
     game: ManagedGame;
@@ -12,16 +14,30 @@ interface CartItemType {
 interface Props {
     cartItems: CartItemType[];
     total: number;
+    flash: {
+        success?: string;
+        error?: string;
+    };
 }
 
-const Cart = ({ cartItems = [], total = 0 }: Props) => {
-    const [items, setItems] = useState(cartItems);
-    const [cartTotal, setCartTotal] = useState(total);
+const Cart = ({ cartItems = [], total = 0, flash }: Props) => {
+    const { showToast } = useToast();
+    const [items, setItems] = useState<CartItemType[]>(cartItems);
+    const [cartTotal, setCartTotal] = useState<number>(total);
 
     useEffect(() => {
         setItems(cartItems);
         setCartTotal(total);
     }, [cartItems, total]);
+
+    useEffect(() => {
+        if (flash?.success) {
+            showToast(flash.success, 'success');
+        }
+        if (flash?.error) {
+            showToast(flash.error, 'error');
+        }
+    }, [flash]);
 
     const handleRemoveFromCart = (gameId: number) => {
         const updatedItems = items.filter(item => item.game.id !== gameId);
@@ -63,12 +79,29 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
         }
     };
 
+    const handleCheckout = () => {
+        axios.post('/checkout', {
+            cartItems: JSON.stringify(items),
+        }, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        }).then((response) => {
+            showToast(response.data.message, 'success');
+            router.visit('/orders');
+        }).catch((error) => {
+            console.error('Checkout failed:', error);
+            const errorMessage = error.response?.data?.error || 'Checkout failed. Please try again.';
+            showToast(errorMessage, 'error');
+        });
+    };
+
     return (
         <>
             <Head title="Cart" />
             <UserNavbar />
             <div className="bg-gray-900 text-white min-h-screen pt-16">
-                {/* Hero Section */}
                 <div className="bg-gradient-to-r from-indigo-600 to-purple-600 py-12 text-center">
                     <h1 className="text-4xl font-extrabold">Shopping Cart</h1>
                     <p className="text-lg text-gray-200 mt-4">
@@ -76,7 +109,6 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                     </p>
                 </div>
 
-                {/* Cart Content */}
                 <div className="max-w-7xl mx-auto py-12 px-6 sm:px-8">
                     <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                         <div className="p-6">
@@ -103,7 +135,7 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                                     </Link>
                                 </div>
                             ) : (
-                                <div className="space-y-6 text-white">
+                                <div className="space-y-6">
                                     {items.map((item) => (
                                         <CartItem
                                             key={item.game.id}
@@ -125,27 +157,7 @@ const Cart = ({ cartItems = [], total = 0 }: Props) => {
                                             Continue Shopping
                                         </Link>
                                         <button
-                                            onClick={() => {
-                                                console.log('Starting checkout with items:', items);
-                                                router.post('/checkout', {
-                                                    cartItems: JSON.stringify(items),
-                                                }, {
-                                                    onSuccess: () => {
-                                                        console.log('Checkout successful');
-                                                        router.post('/cart/remove-all', {}, {
-                                                            onSuccess: () => {
-                                                                setItems([]);
-                                                                setCartTotal(0);
-                                                                router.visit('/orders');
-                                                            },
-                                                        });
-                                                    },
-                                                    onError: (errors) => {
-                                                        console.error('Checkout failed:', errors);
-                                                        alert('Checkout failed. Please try again.');
-                                                    },  
-                                                });
-                                            }}
+                                            onClick={handleCheckout}
                                             className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors duration-200 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                             disabled={items.length === 0}
                                         >

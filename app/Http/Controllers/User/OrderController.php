@@ -15,6 +15,11 @@ class OrderController extends Controller
         $cartItems = json_decode($request->cartItems, true);   
 
         if (empty($cartItems)) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'error' => 'Cart is empty'
+                ], 422);
+            }
             return redirect()->back()->with('error', 'Cart is empty');
         }
 
@@ -36,7 +41,12 @@ class OrderController extends Controller
                 
                 if ($game->quantity < $item['quantity']) {
                     \DB::rollBack();
-                    return redirect()->back()->with('error', "Insufficient stock for {$game->name}");
+                    $errorMessage = "Insufficient stock for {$game->name}";
+                    
+                    if ($request->wantsJson()) {
+                        return response()->json(['error' => $errorMessage], 422);
+                    }
+                    return redirect()->back()->with('error', $errorMessage);
                 }
 
                 $game->decrement('quantity', $item['quantity']);
@@ -49,10 +59,26 @@ class OrderController extends Controller
 
             \DB::commit();
             session()->forget('cart');
-            return redirect()->route('orders')->with('success', 'Order placed successfully');
+
+            $successMessage = 'Order placed successfully';
+            
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => $successMessage,
+                    'redirect' => route('orders')
+                ]);
+            }
+
+            return redirect()->route('orders')->with('success', $successMessage);
+
         } catch (\Exception $e) {
             \DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to create order');
+            $errorMessage = 'Failed to create order';
+            
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $errorMessage], 500);
+            }
+            return redirect()->back()->with('error', $errorMessage);
         }
     }
 
