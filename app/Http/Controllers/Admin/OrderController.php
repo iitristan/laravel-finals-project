@@ -55,7 +55,7 @@ class OrderController extends Controller
             $order->status = $status;
             $order->save();
 
-            // Create status-specific messages
+            // mga message sa status!!!!
             $message = match ($status) {
                 'to be shipped' => "Order #{$order->id} has been marked for shipping",
                 'shipped' => "Order #{$order->id} has been shipped successfully",
