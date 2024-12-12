@@ -12,15 +12,10 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
-        $cartItems = json_decode($request->cartItems, true);   
+        $cartItems = json_decode($request->cartItems, true);
 
         if (empty($cartItems)) {
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'error' => 'Cart is empty'
-                ], 422);
-            }
-            return redirect()->back()->with('error', 'Cart is empty');
+            return $this->handleErrorResponse($request, 'Cart is empty', 422);
         }
 
         try {
@@ -38,15 +33,10 @@ class OrderController extends Controller
 
             foreach ($cartItems as $item) {
                 $game = \App\Models\Game::find($item['game']['id']);
-                
+
                 if ($game->quantity < $item['quantity']) {
                     \DB::rollBack();
-                    $errorMessage = "Insufficient stock for {$game->name}";
-                    
-                    if ($request->wantsJson()) {
-                        return response()->json(['error' => $errorMessage], 422);
-                    }
-                    return redirect()->back()->with('error', $errorMessage);
+                    return $this->handleErrorResponse($request, "Insufficient stock for {$game->name}", 422);
                 }
 
                 $game->decrement('quantity', $item['quantity']);
@@ -60,26 +50,31 @@ class OrderController extends Controller
             \DB::commit();
             session()->forget('cart');
 
-            $successMessage = 'Order placed successfully';
-            
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'message' => $successMessage,
-                    'redirect' => route('orders')
-                ]);
-            }
-
-            return redirect()->route('orders')->with('success', $successMessage);
+            return $this->handleSuccessResponse($request, 'Order placed successfully', route('orders'));
 
         } catch (\Exception $e) {
             \DB::rollBack();
-            $errorMessage = 'Failed to create order';
-            
-            if ($request->wantsJson()) {
-                return response()->json(['error' => $errorMessage], 500);
-            }
-            return redirect()->back()->with('error', $errorMessage);
+            return $this->handleErrorResponse($request, 'Failed to create order', 500);
         }
+    }
+
+    private function handleErrorResponse($request, $message, $statusCode)
+    {
+        if ($request->wantsJson()) {
+            return response()->json(['error' => $message], $statusCode);
+        }
+        return redirect()->back()->with('error', $message);
+    }
+
+    private function handleSuccessResponse($request, $message, $redirectRoute)
+    {
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => $message,
+                'redirect' => $redirectRoute
+            ]);
+        }
+        return redirect()->route('orders')->with('success', $message);
     }
 
     public function index()
