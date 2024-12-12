@@ -371,7 +371,7 @@ const Dashboard = ({
                                                                     )
                                                                 }
                                                             >
-                                                                Soft Delete
+                                                               Hide
                                                             </button>
                                                         )}
                                                         <button
