@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState, useEffect, useMemo } from 'react';
 import AdminNavbar from '@/Navbars/AdminNavbar';
 import GameTable from '@/Components/Manage Games/GameTable';
@@ -9,6 +9,7 @@ import { rawgApi } from '@/services/rawgApi';
 import axios from 'axios';
 import { Game, ManagedGame } from '@/types/game';
 import { GameInput } from '@/types/gameInput';
+import { useToast } from '@/Contexts/ToastContext';
 
 interface Props {
     games: ManagedGame[];
@@ -23,6 +24,7 @@ export default function ManageGames({ games: initialGames }: Props) {
     const [gameInputs, setGameInputs] = useState<Record<number, GameInput>>({});
     const [tableSearchQuery, setTableSearchQuery] = useState('');
     const [selectedGenre, setSelectedGenre] = useState<string>('');
+    const { showToast } = useToast();
 
     const filteredGames = useMemo(() => {
         return managedGames.filter(game => {
@@ -70,7 +72,7 @@ export default function ManageGames({ games: initialGames }: Props) {
         const quantity = parseInt(inputs.quantity);
 
         if (isNaN(price) || isNaN(quantity)) {
-            alert('Please enter valid price and quantity');
+            showToast('Please enter valid price and quantity', 'error');
             return;
         }
 
@@ -87,7 +89,7 @@ export default function ManageGames({ games: initialGames }: Props) {
             });
 
             if (response.status === 201) {
-                const newGame = response.data;
+                const { game: newGame, message } = response.data;
                 setManagedGames(prevGames => [...prevGames, newGame]);
                 setIsModalOpen(false);
                 setGameInputs(prev => {
@@ -95,27 +97,60 @@ export default function ManageGames({ games: initialGames }: Props) {
                     delete newInputs[game.id];
                     return newInputs;
                 });
+                showToast(message, 'success');
             }
         } catch (error) {
             console.error('Error adding game:', error);
             if (axios.isAxiosError(error)) {
-                alert(error.response?.data?.error || 'Failed to add game');
+                showToast(
+                    error.response?.data?.message || 
+                    error.response?.data?.error || 
+                    'Failed to add game', 
+                    'error'
+                );
             }
         }
     };
 
-    const handleGameUpdate = (updatedGame: ManagedGame) => {
-        setManagedGames(prevGames => 
-            prevGames.map(game => 
-                game.id === updatedGame.id ? updatedGame : game
-            )
-        );
+    const handleGameUpdate = async (updatedGame: ManagedGame) => {
+        try {
+            const response = await axios.put(
+                `/admin/games/${updatedGame.id}`, 
+                updatedGame,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                }
+            );
+            
+            const { game: newGame, message } = response.data;
+            setManagedGames(prevGames => 
+                prevGames.map(game => 
+                    game.id === newGame.id ? newGame : game
+                )
+            );
+            showToast(message, 'success');
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                showToast(error.response?.data?.error || 'Failed to update game', 'error');
+            }
+        }
     };
 
-    const handleGameDelete = (gameId: number) => {
-        setManagedGames(prevGames => 
-            prevGames.filter(game => game.id !== gameId)
-        );
+    const handleGameDelete = async (gameId: number) => {
+        try {
+            const response = await axios.delete(`/admin/games/${gameId}`);
+            setManagedGames(prevGames => 
+                prevGames.filter(game => game.id !== gameId)
+            );
+            showToast(response.data.message, 'success');
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                showToast(error.response?.data?.error || 'Failed to delete game', 'error');
+            }
+        }
     };
 
     return (

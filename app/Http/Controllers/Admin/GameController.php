@@ -30,10 +30,28 @@ class GameController extends Controller
         ]);
 
         try {
+            // Check if game already exists by name or slug
+            $existingGame = Game::where('name', $validated['name'])
+                ->orWhere('slug', $validated['slug'])
+                ->first();
+
+            if ($existingGame) {
+                return response()->json([
+                    'error' => 'Game already exists',
+                    'message' => "{$validated['name']} already exists in the store!"
+                ], 422);
+            }
+
             $game = Game::create($validated);
-            return response()->json($game, 201);
+            return response()->json([
+                'game' => $game,
+                'message' => "{$game->name} added successfully!"
+            ], 201);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Failed to add game',
+                'details' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -48,19 +66,40 @@ class GameController extends Controller
 
         try {
             $game->update($validated);
-            return redirect()->back()->with('success', 'Game updated successfully');
+            
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'game' => $game,
+                    'message' => "{$game->name} updated successfully!"
+                ]);
+            }
+
+            return back()->with('success', "{$game->name} updated successfully!");
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to update game');
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'error' => 'Failed to update game',
+                    'details' => $e->getMessage()
+                ], 500);
+            }
+
+            return back()->with('error', 'Failed to update game');
         }
     }
 
     public function destroy(Game $game)
     {
         try {
+            $gameName = $game->name;
             $game->delete();
-            return redirect()->back()->with('success', 'Game deleted successfully');
+            return response()->json([
+                'message' => "{$gameName} deleted successfully!"
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to delete game');
+            return response()->json([
+                'error' => 'Failed to delete game',
+                'details' => $e->getMessage()
+            ], 500);
         }
     }
 }
