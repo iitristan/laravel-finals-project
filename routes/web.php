@@ -24,8 +24,6 @@ Route::get('/', function () {
 // Logout Route (use controller method)
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
-
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login');

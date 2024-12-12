@@ -1,16 +1,15 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Link, useForm } from '@inertiajs/react';
-import { Menu, X } from 'lucide-react';
-
+import React, { useState } from "react";
+import { Link, useForm } from "@inertiajs/react";
+import { Menu, X } from "lucide-react";
 
 const UserNavbar: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { post } = useForm();
 
     const handleLogout = () => {
-        post('/logout');
+        post("/logout");
     };
 
     return (
@@ -113,12 +112,12 @@ const UserNavbar: React.FC = () => {
                         Cart
                     </Link>
                     <button
-                            onClick={handleLogout}
-                            type="button"
-                            className="text-white text-base px-3 py-2 rounded-md hover:bg-indigo-700 transition-all"
-                        >
+                        onClick={handleLogout}
+                        type="button"
+                        className="text-white text-base px-3 py-2 rounded-md hover:bg-indigo-700 transition-all"
+                    >
                         Logout
-                        </button>
+                    </button>
                 </div>
             )}
         </nav>

@@ -30,12 +30,6 @@ const AdminNavbar: React.FC = () => {
                                 >
                                     Manage Orders
                                 </Link>
-                                <Link
-                                    href="/admin/users"
-                                    className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
-                                >
-                                    Manage Users
-                                </Link>
                             </div>
                         </div>
                     </div>
