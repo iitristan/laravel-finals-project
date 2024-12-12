@@ -38,10 +38,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [reviews, setReviews] = useState([]);
+    const [editingReviewId, setEditingReviewId] = useState<number | null>(null);
+    const [editingContent, setEditingContent] = useState<{ review: string; rating: number }>({
+        review: "",
+        rating: 0,
+    });
+
     const { data, setData, post, reset, errors } = useForm({
         review: "",
         rating: 0,
-        image: null,
     });
 
     // Fetch recent games on page load
@@ -65,15 +70,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
 
         fetchGames();
     }, []);
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            setData("image", e.target.files[0]);
-        }
-    };
+    
 
     useEffect(() => {
-        // Fetch reviews from the backend
         const fetchReviews = async () => {
             try {
                 const response = await fetch("/reviews");
@@ -85,25 +84,108 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
         };
         fetchReviews();
     }, []);
-    
+
     const submitReview = async (e: React.FormEvent) => {
         e.preventDefault();
-    
-        post('/reviews', {
-            onError: (errors) => {
-                console.error('Review Submission Errors:', errors);
-                alert('Failed to submit review. Please check the form.');
-            },
+        post("/reviews", {
             onSuccess: () => {
                 reset();
-                alert('Review submitted successfully!');
-                fetchReviews(); // Fetch the updated list of reviews
+                alert("Review submitted successfully!");
+                window.location.reload();
+            },
+            onError: (errors) => {
+                console.error("Review submission errors:", errors);
+                alert("Failed to submit review.");
             },
         });
     };
+
+    const handleEditReview = (id: number) => {
+        const reviewToEdit = reviews.find((review: any) => review.id === id);
+        if (reviewToEdit) {
+            setEditingReviewId(id);
+            setEditingContent({ review: reviewToEdit.review, rating: reviewToEdit.rating });
+        }
+    };
+
+    const saveEditedReview = async () => {
+        if (editingReviewId === null) return;
+    
+        try {
+            const csrfToken = document
+                .querySelector('meta[name="csrf-token"]')
+                ?.getAttribute("content");
+    
+            const response = await fetch(`/reviews/${editingReviewId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken || "",
+                },
+                body: JSON.stringify(editingContent),
+            });
+    
+            if (response.ok) {
+                const result = await response.json();
+                alert("Review updated successfully!");
+                setEditingReviewId(null);
+                setReviews((prev) =>
+                    prev.map((review) =>
+                        review.id === editingReviewId
+                            ? { ...review, ...result.review }
+                            : review
+                    )
+                );
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.message || "Failed to update review."}`);
+            }
+        } catch (error) {
+            console.error("Error updating review:", error);
+            alert("An error occurred while updating the review.");
+        }
+    };
+    
+    
+    
+    
+    
+    const handleDeleteReview = async (id: number) => {
+        if (!confirm("Are you sure you want to delete this review?")) return;
+    
+        try {
+            const csrfToken = document
+                .querySelector('meta[name="csrf-token"]')
+                ?.getAttribute("content");
+    
+            const response = await fetch(`/reviews/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken || "",
+                },
+            });
+    
+            if (response.ok) {
+                alert("Review deleted successfully!");
+                setReviews((prev) => prev.filter((review) => review.id !== id));
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error || "Failed to delete review."}`);
+            }
+        } catch (error) {
+            console.error("Error deleting review:", error);
+            alert("An error occurred while deleting the review.");
+        }
+    };
+    
+    
     
 
-    // Handle search query and filter games based on user input
+    const cancelEditing = () => {
+        setEditingReviewId(null);
+        setEditingContent({ review: "", rating: 0 });
+    };
+    
     useEffect(() => {
         const searchGames = async () => {
             setLoading(true);
@@ -137,8 +219,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
                 setLoading(false);
             }
         };
-
-
 
         const timeoutId = setTimeout(searchGames, 300);
         return () => clearTimeout(timeoutId);
@@ -337,40 +417,95 @@ const LandingPage: React.FC<LandingPageProps> = ({ isAuthenticated, user }) => {
                         </form>
                     </div>
                 )}  
-  {/* Display Reviews */}
-  <div className="max-w-7xl mx-auto py-8 px-6 sm:px-8 bg-gray-800 rounded-lg mt-8">
-                    <h2 className="text-3xl font-semibold mb-6">
-                        What Our Users Say
-                    </h2>
+ {/* Display Reviews */}
+ <div className="max-w-7xl mx-auto py-8 px-6 sm:px-8 bg-gray-800 rounded-lg mt-8">
+                    <h2 className="text-3xl font-semibold mb-6">What Our Users Say</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                        {reviews.map((review: any) => (
-                            <div
-                                key={review.id}
-                                className="bg-gray-700 p-6 rounded-lg shadow-md flex flex-col"
-                            >
-                                <p className="text-gray-300 italic">
-                                    "{review.review}"
-                                </p>
-                                {review.image && (
-                                    <img
-                                        src={`/storage/${review.image}`}
-                                        alt="Review"
-                                        className="mt-4 rounded-lg"
-                                    />
-                                )}
-                                <div className="mt-4 flex items-center">
-                                    <div className="font-semibold text-white">
-                                        {review.user_name}
-                                    </div>
-                                    <div className="ml-auto text-yellow-400">
-                                        {"★".repeat(review.rating) +
-                                            "☆".repeat(5 - review.rating)}
-                                    </div>
+                        {reviews
+                            .filter((review: any) =>
+                                isAuthenticated ? review.user?.email === user?.email : true
+                            )
+                            .map((review: any) => (
+                                <div
+                                    key={review.id}
+                                    className="bg-gray-700 p-6 rounded-lg shadow-md flex flex-col"
+                                >
+                                    {editingReviewId === review.id ? (
+                                        <>
+                                            <textarea
+                                                value={editingContent.review}
+                                                onChange={(e) =>
+                                                    setEditingContent({
+                                                        ...editingContent,
+                                                        review: e.target.value,
+                                                    })
+                                                }
+                                                className="w-full p-2 rounded-lg bg-gray-800 text-white"
+                                            />
+                                            <input
+                                                type="number"
+                                                value={editingContent.rating}
+                                                onChange={(e) =>
+                                                    setEditingContent({
+                                                        ...editingContent,
+                                                        rating: Number(e.target.value),
+                                                    })
+                                                }
+                                                min="1"
+                                                max="5"
+                                                className="w-16 mt-2 p-2 rounded-lg bg-gray-800 text-white"
+                                            />
+                                            <div className="flex space-x-4 mt-2">
+                                                <button
+                                                    onClick={saveEditedReview}
+                                                    className="bg-green-600 px-4 py-2 rounded-lg text-white"
+                                                >
+                                                    Save
+                                                </button>
+                                                <button
+                                                    onClick={cancelEditing}
+                                                    className="bg-red-600 px-4 py-2 rounded-lg text-white"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p className="text-gray-300 italic">"{review.review}"</p>
+                                            <div className="mt-4 flex items-center">
+                                                <div className="font-semibold text-white">
+                                                    {review.user?.email || "Anonymous User"}
+                                                </div>
+                                                <div className="ml-auto text-yellow-400">
+                                                    {"★".repeat(review.rating) +
+                                                        "☆".repeat(5 - review.rating)}
+                                                </div>
+                                            </div>
+                                            {isAuthenticated &&
+                                                review.user?.email === user?.email && (
+                                                    <div className="mt-4 flex space-x-4">
+                                                        <button
+                                                            onClick={() => handleEditReview(review.id)}
+                                                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteReview(review.id)}
+                                                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                )}
+                                        </>
+                                    )}
                                 </div>
-                            </div>
-                        ))}
+                            ))}
                     </div>
                 </div>
+
             </div>
         </>
     );

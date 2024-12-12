@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Http\Controllers\Controller;
-
-
 use Illuminate\Http\Request;
 use App\Models\Review;
+use App\Models\User; // Import the User model
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 
@@ -15,10 +13,10 @@ class ReviewController extends Controller
 {
     public function index()
     {
-        $reviews = Review::with('user')->latest()->get();
+        $reviews = Review::with('user:id,email')->latest()->get();
         return response()->json(['data' => $reviews]);
     }
-
+    
     public function store(Request $request)
     {
         $request->validate([
@@ -45,41 +43,66 @@ class ReviewController extends Controller
             'image' => $imagePath,
         ]);
     
-       
         return back();
     }
+
     public function adminIndex()
-{
-    $reviews = Review::withTrashed()->get();
-    return response()->json($reviews);
-}
-
-public function update(Request $request, Review $review)
-{
-    $request->validate([
-        'review' => 'required|string|max:500',
-        'rating' => 'required|integer|min:1|max:5',
-    ]);
-
-    $review->update($request->only('review', 'rating'));
-    return response()->json(['message' => 'Review updated successfully']);
-}
-
-public function destroy(Request $request, Review $review)
-{
-    if ($request->query('force')) {
-        $review->forceDelete();
-        return response()->json(['message' => 'Review permanently deleted']);
-    } else {
-        $review->delete();
-        return response()->json(['message' => 'Review soft deleted']);
+    {
+        $reviews = Review::withTrashed()->get();
+        return response()->json($reviews);
     }
-}
 
-public function restore($id)
+    public function update(Request $request, $id)
+    {
+        $review = Review::findOrFail($id);
+    
+        $request->validate([
+            'review' => 'required|string|max:500',
+            'rating' => 'required|integer|min:1|max:5',
+        ]);
+    
+        $review->update($request->only('review', 'rating'));
+    
+        return back(); // Reload the current page
+    }
+    
+    
+
+    public function destroy(Request $request, $id)
 {
     $review = Review::withTrashed()->findOrFail($id);
-    $review->restore();
-    return response()->json(['message' => 'Review restored successfully']);
+
+    if ($request->query('force')) {
+        $review->forceDelete();
+        return response()->noContent(); // Return 204 No Content for successful deletion
+    }
+
+    $review->delete();
+    return response()->noContent(); // Return 204 No Content for successful soft deletion
 }
-}    
+
+    
+    public function restore($id)
+    {
+        $review = Review::withTrashed()->findOrFail($id);
+        $review->restore();
+        return redirect()->back(); // Redirect to the previous page
+    }
+    
+
+    // New method to get the user ID based on email
+    public function getUserIdByEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+            return response()->json(['user_id' => $user->id]);
+        }
+
+        return response()->json(['message' => 'User not found'], 404);
+    }
+}

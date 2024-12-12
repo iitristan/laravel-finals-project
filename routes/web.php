@@ -30,21 +30,24 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
+Route::post('/get-user-id', [ReviewController::class, 'getUserIdByEmail']);
 
 
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
     Route::middleware('auth')->group(function () {
-    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-});   
+        Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+        Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('reviews.update');
+        Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    });
+    
 
-
-// Admin Reviews Management
-Route::middleware(['auth:admin'])->group(function () {
-    Route::get('/admin/reviews', [ReviewController::class, 'adminIndex']);
-    Route::put('/admin/reviews/{review}', [ReviewController::class, 'update']);
-    Route::delete('/admin/reviews/{review}', [ReviewController::class, 'destroy']);
-    Route::post('/admin/reviews/{review}/restore', [ReviewController::class, 'restore']);
-});
+    Route::middleware(['auth:admin'])->group(function () {
+        Route::get('/admin/reviews', [ReviewController::class, 'adminIndex']);
+        Route::put('/admin/reviews/{review}', [ReviewController::class, 'update']);
+        Route::delete('/admin/reviews/{id}', [ReviewController::class, 'destroy']); // Updated to accept `id`
+        Route::post('/admin/reviews/{id}/restore', [ReviewController::class, 'restore']); // Updated to accept `id`
+    });
+    
 
 
 // Admin Routes

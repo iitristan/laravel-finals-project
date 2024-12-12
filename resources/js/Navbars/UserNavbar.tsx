@@ -23,11 +23,17 @@ const UserNavbar: React.FC = () => {
 
                     {/* Navbar Links */}
                     <div className="hidden md:flex items-center space-x-6">
+                    <Link
+                            href="/"
+                            className="text-white text-base hover:text-gray-200 transition-all"
+                        >
+                            Home
+                        </Link>
                         <Link
                             href="/dashboard"
                             className="text-white text-base hover:text-gray-200 transition-all"
                         >
-                            User Dashboard
+                            Dashboard
                         </Link>
                         <Link
                             href="/store"
