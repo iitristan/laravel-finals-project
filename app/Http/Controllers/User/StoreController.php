@@ -18,7 +18,6 @@ class StoreController extends Controller
             ->where('status', 'active')
             ->get();
 
-        // Add wishlist information to games
         if (Auth::check()) {
             $wishlist = Auth::user()->wishlist;
             if ($wishlist) {
@@ -105,25 +104,25 @@ class StoreController extends Controller
     public function removeFromCart(Game $game)
     {
         $cart = Cart::where('user_id', Auth::id())->firstOrFail();
-        
+
         $cartItem = $cart->items()->where('game_id', $game->id)->first();
-        
+
         if (!$cartItem) {
             return response()->json([
                 'success' => false,
                 'message' => 'Item not found in cart'
             ], 404);
         }
-        
+
         $cartItem->delete();
-        
+
         if (request()->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Item removed from cart successfully'
             ]);
         }
-        
+
         return back()->with('success', 'Item removed from cart');
     }
 
@@ -134,7 +133,7 @@ class StoreController extends Controller
         ]);
 
         $cart = Cart::where('user_id', Auth::id())->first();
-        
+
         if ($cart) {
             $cart->items()
                 ->where('game_id', $game->id)
@@ -147,7 +146,7 @@ class StoreController extends Controller
     public function removeAllFromCart()
     {
         $cart = Cart::where('user_id', Auth::id())->first();
-        
+
         if ($cart) {
             $cart->items()->delete();
             return back()->with('success', 'Cart cleared successfully');
@@ -159,7 +158,7 @@ class StoreController extends Controller
     public function show(Game $game)
     {
         $game->load('genres');
-        
+
         // Add wishlist information
         if (Auth::check()) {
             $wishlist = Auth::user()->wishlist;

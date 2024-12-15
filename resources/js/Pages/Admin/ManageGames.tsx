@@ -152,15 +152,19 @@ export default function ManageGames({ games: initialGames }: Props) {
 
     const handleGameDelete = async (gameId: number) => {
         try {
-            const response = await axios.delete(`/admin/games/${gameId}`);
-            setManagedGames(prevGames => 
-                prevGames.filter(game => game.id !== gameId)
-            );
-            showToast(response.data.message, 'success');
+            router.delete(`/admin/games/${gameId}`, {
+                onSuccess: () => {
+                    setManagedGames(prevGames => 
+                        prevGames.filter(game => game.id !== gameId)
+                    );
+                    showToast('Game deleted successfully', 'success');
+                },
+                onError: (errors) => {
+                    showToast('Failed to delete game', 'error');
+                }
+            });
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                showToast(error.response?.data?.error || 'Failed to delete game', 'error');
-            }
+            showToast('Failed to delete game', 'error');
         }
     };
 

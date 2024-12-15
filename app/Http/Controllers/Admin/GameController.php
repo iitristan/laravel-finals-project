@@ -26,7 +26,6 @@ class GameController extends Controller
             'quantity' => 'required|integer|min:0',
             'status' => 'required|string|in:active,inactive',
             'rating' => 'nullable|numeric',
-            'genres' => 'nullable|array',
         ]);
 
         try {
@@ -89,17 +88,9 @@ class GameController extends Controller
 
     public function destroy(Game $game)
     {
-        try {
-            $gameName = $game->name;
-            $game->delete();
-            return response()->json([
-                'message' => "{$gameName} deleted successfully!"
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Failed to delete game',
-                'details' => $e->getMessage()
-            ], 500);
-        }
+        $game->delete();
+        
+        return redirect()->back()
+            ->with('message', 'Game deleted successfully!');
     }
 }
